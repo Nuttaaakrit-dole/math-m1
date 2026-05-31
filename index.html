@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N-NET ม.ต้น — แบบทดสอบวิชาคณิตศาสตร์ประยุกต์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1A237E; --primary-dark: #0D1642; --primary-light: #E8EAF6;
+    --green: #3B6D11; --green-light: #EAF3DE; --green-mid: #97C459;
+    --red: #A32D2D; --red-light: #FCEBEB; --red-mid: #F09595;
+    --amber-light: #FAEEDA; --amber: #633806;
+    --gray-bg: #f5f4f0; --gray-card: #fff; --gray-border: #e0e0e0;
+    --text: #1a1a1a; --text-muted: #666;
+  }
+  body { font-family: 'Sarabun', sans-serif; background: var(--gray-bg); color: var(--text); padding: 16px 8px; line-height: 1.6; }
+  .container { max-width: 650px; margin: 0 auto; padding-bottom: 60px; }
+  
+  .header-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 24px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
+  .header-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .header-card p { font-size: 14px; opacity: 0.9; }
+
+  .card { background: var(--gray-card); border: 1px solid var(--gray-border); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+  
+  .progress-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 14px; color: var(--text-muted); font-weight: 500; }
+  .progress-bar-bg { background: #e0e0e0; height: 6px; border-radius: 3px; flex-grow: 1; margin: 0 12px; position: relative; overflow: hidden; }
+  .progress-bar-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s ease; }
+
+  .question-text { font-size: 17px; font-weight: 600; margin-bottom: 18px; color: var(--text); }
+  
+  .hint-box { background: var(--amber-light); border-left: 4px solid var(--amber); padding: 12px 16px; border-radius: 4px 8px 8px 4px; margin-bottom: 18px; font-size: 14px; color: var(--amber); }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .option-item { display: flex; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--gray-border); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; background: white; font-size: 15px; }
+  .option-item:hover { border-color: #b0b0b0; background: #fafafa; }
+  .option-item.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); font-weight: 500; }
+  
+  /* State styles for checked answers */
+  .option-item.correct-reveal { border-color: var(--green-mid); background: var(--green-light); color: var(--green); font-weight: 500; }
+  .option-item.wrong-reveal { border-color: var(--red-mid); background: var(--red-light); color: var(--red); }
+  .option-item.disabled { cursor: not-allowed; pointer-events: none; }
+
+  .radio-dot { height: 18px; min-width: 18px; border: 2px solid #ccc; border-radius: 50%; margin-right: 12px; margin-top: 2px; position: relative; display: inline-block; }
+  .option-item.selected .radio-dot { border-color: var(--primary); }
+  .option-item.selected .radio-dot::after { content: ''; position: absolute; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; top: 2px; left: 2px; }
+  .option-item.correct-reveal .radio-dot { border-color: var(--green); }
+  .option-item.correct-reveal .radio-dot::after { content: '✓'; color: var(--green); font-size: 12px; font-weight: bold; position: absolute; top: -4px; left: 2px; }
+  .option-item.wrong-reveal .radio-dot { border-color: var(--red); }
+  .option-item.wrong-reveal .radio-dot::after { content: '✕'; color: var(--red); font-size: 12px; font-weight: bold; position: absolute; top: -4px; left: 2px; }
+
+  .rationale-box { padding: 14px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 18px; animation: fadeIn 0.3s ease; }
+  .rationale-box.correct { background: var(--green-light); border: 1px dashed var(--green-mid); color: var(--green); }
+  .rationale-box.wrong { background: var(--red-light); border: 1px dashed var(--red-mid); color: var(--red); }
+
+  .nav-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
+  .btn { flex: 1; padding: 12px 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; text-decoration: none; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-primary:disabled { background: #ccc; color: #888; cursor: not-allowed; }
+  .btn-secondary { background: #e0e0e0; color: var(--text); }
+  .btn-secondary:hover { background: #d2d2d2; }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Summary & Review styling */
+  .summary-card { text-align: center; padding: 32px 24px; }
+  .grade-pill { display: inline-block; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 18px; margin: 8px 0; }
+  .grade-pass { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .grade-fail { background: var(--red-light); color: var(--red); border: 1px solid var(--red-mid); }
+  .feedback-box { background: #f9f9f9; padding: 14px; border-radius: 8px; border: 1px solid var(--gray-border); margin-bottom: 20px; font-size: 14px; }
+  .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-box { background: white; border: 1px solid var(--gray-border); padding: 12px; border-radius: 10px; }
+  .stat-num { font-size: 20px; font-weight: 700; }
+  .slbl { font-size: 12px; color: var(--text-muted); }
+
+  .review-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; text-align: left; border-bottom: 2px solid var(--gray-border); padding-bottom: 6px; }
+  .review-item { text-align: left; padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  .review-item:last-child { border-bottom: none; }
+  
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-card">
+    <h1>N-NET ม.ต้น — วิชาคณิตศาสตร์</h1>
+    <p>สกร. ระดับมัธยมศึกษาตอนต้น | แบบทดสอบประยุกต์ใช้ความคิดรวบยอด</p>
+  </div>
+
+  <div id="quiz-app"></div>
+</div>
+
+<script>
+const quizData = {
+  "questions": [
+    {
+      "questionNumber": 1,
+      "question": "ในตอนเที่ยงอุณหภูมิบนยอดเขาแห่งหนึ่งเท่ากับ 12 องศาเซลเซียส ต่อมาในตอนกลางคืนอุณหภูมิลดลงไป 18 องศาเซลเซียส และในช่วงเช้ามืดอุณหภูมิเพิ่มขึ้นมาอีก 5 องศาเซลเซียส อยากทราบว่าอุณหภูมิในช่วงเช้ามืดเป็นกี่องศาเซลเซียส",
+      "answerOptions": [
+        { "text": "1 องศาเซลเซียส", "rationale": "เกิดจากการคำนวณเครื่องหมายผิดพลาด เช่น คิดว่า -18 + 5 = -13 แล้วนำไปหักลบกับ 12 ผิดวิธี", "isCorrect": false },
+        { "text": "-1 องศาเซลเซียส", "rationale": "การคำนวณอุณหภูมิสุดท้ายมาจาก 12 - 18 + 5 = -1 ซึ่งสะท้อนการลดลงและเพิ่มขึ้นตามลำดับเวลาบนเส้นจำนวน", "isCorrect": true },
+        { "text": "-6 องศาเซลเซียส", "rationale": "เกิดจากการนำอุณหภูมิช่วงเที่ยงมาลบกับปริมาณที่ลดลงโดยลืมคำนวณส่วนที่เพิ่มขึ้นในช่วงเช้ามืด", "isCorrect": false },
+        { "text": "-11 องศาเซลเซียส", "rationale": "เกิดจากความสับสนในการตั้งเครื่องหมายของตัวเลข ส่งผลให้เกิดการคำนวณที่ผิดพลาดจากหลักการของจำนวนเต็ม", "isCorrect": false }
+      ],
+      "hint": "นำอุณหภูมิเริ่มต้นมาหักลบปริมาณที่ลดลง แล้วรวมกับปริมาณที่เพิ่มขึ้นตามลำดับเวลา"
+    },
+    {
+      "questionNumber": 2,
+      "question": "ถังน้ำใบหนึ่งมีน้ำอยู่ \\(\\frac{2}{3}\\) ของถัง หลังจากตักน้ำออกไปใช้ 12 ลิตร พบว่าเหลือน้ำอยู่เพียงครึ่งถัง (\\(\\frac{1}{2}\\) ของถัง) ถังน้ำใบนี้มีความจุเต็มถังกี่ลิตร",
+      "answerOptions": [
+        { "text": "60 ลิตร", "rationale": "เป็นตัวลวงที่เกิดจากการคำนวณเศษส่วนผิดพลาด หรือคิดว่าปริมาณน้ำที่ใช้ไปสัมพันธ์กับส่วนแบ่งในอัตราส่วนอื่น", "isCorrect": false },
+        { "text": "48 ลิตร", "rationale": "เกิดจากการคำนวณส่วนต่างของเศษส่วนผิดเป็นอย่างอื่น เช่น นำส่วนของเศษส่วนมาลบกันโดยตรงโดยไม่ทำส่วนให้เท่ากันก่อน", "isCorrect": false },
+        { "text": "72 ลิตร", "rationale": "เมื่อตั้งสมการ \\(\\frac{2}{3}x - 12 = \\frac{1}{2}x\\) จะได้ผลต่างเศษส่วนเป็น \\(\\frac{1}{6}x = 12\\) ดังนั้นความจุเต็มถังเท่ากับ 12 × 6 = 72 ลิตร", "isCorrect": true },
+        { "text": "84 ลิตร", "rationale": "ตัวลวงนี้ได้จากการสุ่มตัวเลขพหุคูณของ 12 เพื่อให้หารลงตัวแต่อาจไม่ได้ตรงตามเงื่อนไขของสมการน้ำในถัง", "isCorrect": false }
+      ],
+      "hint": "ตั้งสมการโดยให้ความจุเต็มถังเป็น x แล้วหาผลต่างของเศษส่วนทั้งสองที่เท่ากับ 12 ลิตร"
+    },
+    {
+      "questionNumber": 3,
+      "question": "อัตราส่วนของส่วนผสมขนมปังประกอบด้วย แป้ง : น้ำตาล : เนย เท่ากับ 8 : 3 : 2 ถ้าคนทำขนมต้องการใช้แป้งทั้งหมด 400 กรัม เขาจะต้องใช้น้ำตาลมากกว่าเนยกี่กรัม",
+      "answerOptions": [
+        { "text": "50 กรัม", "rationale": "แป้ง 8 ส่วนคิดเป็น 400 กรัม แสดงว่า 1 ส่วนเท่ากับ 50 กรัม ซึ่งน้ำตาลและเนยมีส่วนต่างกันอยู่ 3 - 2 = 1 ส่วน จึงต่างกัน 50 กรัมพอดี", "isCorrect": true },
+        { "text": "100 กรัม", "rationale": "ปริมาณนี้เป็นน้ำหนักของเนยทั้งหมดที่มีในส่วนผสม ไม่ใช่ผลต่างระหว่างปริมาณน้ำตาลกับเนยตามที่โจทย์ถาม", "isCorrect": false },
+        { "text": "150 กรัม", "rationale": "ปริมาณนี้เป็นน้ำหนักของน้ำตาลทั้งหมดในส่วนผสม ซึ่งคำนวณได้จาก 3 × 50 กรัม แต่ยังไม่ใช่คำตอบของผลต่าง", "isCorrect": false },
+        { "text": "250 กรัม", "rationale": "ตัวลวงนี้เกิดจากการนำน้ำหนักของน้ำตาลและเนยมารวมกันแทนที่จะนำมาหาผลต่างตามเงื่อนไขโจทย์", "isCorrect": false }
+      ],
+      "hint": "หาจำนวนกรัมต่อหนึ่งส่วนแบ่งก่อน โดยเทียบจากปริมาณแป้ง 8 ส่วนที่เท่ากับ 400 กรัม"
+    },
+    {
+      "questionNumber": 4,
+      "question": "ร้านค้าติดราคาโทรศัพท์มือถือไว้ 8,000 บาท ซึ่งเป็นราคาที่คิดกำไรไว้แล้ว 25% ของราคาทุน แต่ในช่วงเทศกาลได้ประกาศลดราคา 10% จากราคาที่ติดไว้ ร้านค้าจะยังได้กำไรจากการขายโทรศัพท์เครื่องนี้กี่บาท",
+      "answerOptions": [
+        { "text": "1,200 บาท", "rationale": "ตัวลวงที่เกิดจากการคิดกำไร 25% จากราคาป้ายโดยตรงแทนการคำนวณจากราคาทุนจริง", "isCorrect": false },
+        { "text": "800 บาท", "rationale": "ทุนเท่ากับ 8,000 / 1.25 = 6,400 บาท และราคาขายจริงหลังลดราคาคือ 8,000 × 0.90 = 7,200 บาท เมื่อนำมาลบกันจะได้กำไรคงเหลือ 800 บาท", "isCorrect": true },
+        { "text": "1,000 บาท", "rationale": "เกิดจากความสับสนในการหักลบเปอร์เซ็นต์ โดยนำเปอร์เซ็นต์กำไรและเปอร์เซ็นต์ส่วนลดมาลบกันตรงๆ เป็น 15% แล้วคิดจากราคาป้าย", "isCorrect": false },
+        { "text": "1,600 บาท", "rationale": "มูลค่านี้คือผลกำไรเต็มจำนวนตอนแรกสุดที่คิดจากราคาทุนโดยยังไม่ได้หักส่วนลด 10% ออกไป", "isCorrect": false }
+      ],
+      "hint": "ขั้นตอนแรกต้องคำนวณหาราคาทุนที่แท้จริงก่อน จากนั้นคำนวณราคาขายจริงหลังจากลดราคาแล้วนำมาหักลบกัน"
+    },
+    {
+      "questionNumber": 5,
+      "question": "ค่าของ \\(\\frac{2^5 \\times 4^3}{8^2}\\) เท่ากับข้อใด",
+      "answerOptions": [
+        { "text": "16", "rationale": "เกิดความผิดพลาดในการคำนวณเลขชี้กำลังของฐาน 4 หรือ 8 เช่น คิดว่า 4^3 = 2^5 ซึ่งส่งผลให้คำตอบสุดท้ายน้อยกว่าความเป็นจริง", "isCorrect": false },
+        { "text": "64", "rationale": "เกิดจากการนำเลขชี้กำลังไปคูณกันผิดพลาดในขั้นตอนตัดทอนเศษส่วน ทำให้ได้คำตอบเป็น 2^6 ซึ่งไม่ถูกต้อง", "isCorrect": false },
+        { "text": "32", "rationale": "แปลงทุกพจน์ให้มีฐานเป็น 2 จะได้พจน์ด้านบนเป็น 2^5 × 2^6 = 2^11 ส่วนด้านล่างคือ 2^6 เมื่อนำมาหารกันจะได้ 2^5 = 32", "isCorrect": true },
+        { "text": "8", "rationale": "ตัวลวงที่เกิดจากการคำนวณผิดพลาดโดยคิดว่าต้องนำเลขฐานมาตัดทอนกันก่อนนำไปคำนวณเลขชี้กำลัง", "isCorrect": false }
+      ],
+      "hint": "เปลี่ยนฐานของทุกจำนวนให้เป็นฐาน 2 เหมือนกันทั้งหมด ก่อนจะใช้สมบัติของเลขยกกำลังในการยุบรวมพจน์"
+    },
+    {
+      "questionNumber": 6,
+      "question": "ข้อใดคือจำนวนเต็มที่ใกล้เคียงกับค่าของ \\(\\sqrt{150}\\) มากที่สุด",
+      "answerOptions": [
+        { "text": "11", "rationale": "ค่านี้ยกกำลังสองแล้วได้ 121 ซึ่งน้อยกว่า 150 ค่อนข้างมากเมื่อเทียบกับ 144", "isCorrect": false },
+        { "text": "12", "rationale": "เนื่องจาก 12^2 = 144 และ 13^2 = 169 ซึ่ง 150 มีค่าอยู่ใกล้เคียงกับ 144 มากกว่า ทำให้ค่ารากที่สองใกล้เคียงกับ 12 มากที่สุด", "isCorrect": true },
+        { "text": "13", "rationale": "ค่านี้ยกกำลังสองแล้วได้ 169 ซึ่งมีระยะห่างจาก 150 มากกว่าค่าของ 12^2 จึงยังไม่ใช่ค่าที่ใกล้เคียงที่สุด", "isCorrect": false },
+        { "text": "15", "rationale": "เป็นตัวลวงที่มักเกิดจากความเข้าใจผิด สับสนนำตัวเลข 150 ไปหารด้วย 10 เพื่อคาดคะเนค่ารากที่สองอย่างผิดวิธี", "isCorrect": false }
+      ],
+      "hint": "ลองนึกถึงจำนวนเต็มที่ยกกำลังสองแล้วได้ค่าใกล้เคียงกับ 150 ทั้งแบบที่น้อยกว่าและมากกว่า"
+    },
+    {
+      "questionNumber": 7,
+      "question": "เสาไฟฟ้ายืนตั้งฉากกับพื้นดิน มีลวดสลิงผูกยึดจากยอดเสาลงมายังสมอบกที่พื้นดิน ถ้าสมอบกอยู่ห่างจากโคนเสาไฟฟ้าเป็นระยะ 9 เมตร และลวดสลิงยาว 15 เมตร เสาไฟฟ้านี้มีความสูงกี่เมตร",
+      "answerOptions": [
+        { "text": "10 เมตร", "rationale": "เป็นตัวลวงที่คิดขึ้นมาลอยๆ หรือเกิดจากการคำนวณเลขยกกำลังสองผิดพลาดในระหว่างขั้นตอนการย้ายข้างสมการ", "isCorrect": false },
+        { "text": "6 เมตร", "rationale": "เกิดจากการนำความยาวของสลิง 15 เมตรมาลบกับระยะห่าง 9 เมตรโดยตรง ซึ่งไม่ถูกต้องตามหลักการของสามเหลี่ยมมุมฉาก", "isCorrect": false },
+        { "text": "14 เมตร", "rationale": "ค่านี้ใกล้เคียงกับความยาวสลิง แต่อสมาการและทฤษฎีบทสามเหลี่ยมมุมฉากระบุว่าด้านประกอบมุมฉากต้องสั้นกว่าด้านตรงข้ามมุมฉากเสมอ", "isCorrect": false },
+        { "text": "12 เมตร", "rationale": "ตามทฤษฎีบทพีทาโกรัส h^2 + 9^2 = 15^2 จะได้ h^2 = 225 - 81 = 144 ดังนั้นความสูงของเสาไฟฟ้าคือ 12 เมตร", "isCorrect": true }
+      ],
+      "hint": "ปัญหานี้สามารถจำลองเป็นรูปสามเหลี่ยมมุมฉากได้ โดยใช้ทฤษฎีบทพีทาโกรัสมาช่วยคำนวณ"
+    },
+    {
+      "questionNumber": 8,
+      "question": "ที่ดินรูปสี่เหลี่ยมผืนผ้าผืนหนึ่งมีเส้นรอบรูปยาว 60 เมตร ถ้าด้านยาวมีความยาวมากกว่าด้านกว้างอยู่ 4 เมตร ที่ดินผืนนี้จะมีพื้นที่ทั้งหมดกี่ตารางเมตร",
+      "answerOptions": [
+        { "text": "221 ตารางเมตร", "rationale": "กำหนดให้กว้าง w จะได้สมการครึ่งรอบรูปคือ w + (w+4) = 30 ส่งผลให้กว้าง 13 เมตร ยาว 17 เมตร มีพื้นที่เท่ากับ 13 × 17 = 221 ตารางเมตร", "isCorrect": true },
+        { "text": "225 ตารางเมตร", "rationale": "เกิดจากการสมมติให้ที่ดินเป็นรูปสี่เหลี่ยมจัตุรัสที่มีความยาวด้านละ 15 เมตร ซึ่งขัดแย้งกับเงื่อนไขที่ด้านยาวต้องยาวกว่าด้านกว้าง", "isCorrect": false },
+        { "text": "216 ตารางเมตร", "rationale": "ตัวลวงนี้เกิดจากการคำนวณความกว้างและความยาวผิดพลาดเป็น 12 และ 18 เมตร ซึ่งให้ผลรวมเป็น 30 แต่มีผลต่างไม่ตรงกับเงื่อนไขโจทย์", "isCorrect": false },
+        { "text": "240 ตารางเมตร", "rationale": "เกิดจากการนำความยาวของเส้นรอบรูปหรือตัวเลขอื่นในโจทย์มาคูณกันโดยไม่หาความกว้างและความยาวจริงก่อน", "isCorrect": false }
+      ],
+      "hint": "ใช้ข้อมูลเส้นรอบรูปเพื่อหาผลรวมของกว้างและยาว จากนั้นกำหนดตัวแปรแก้สมการหาความกว้างและความยาวออกมาก่อน"
+    },
+    {
+      "questionNumber": 9,
+      "question": "ถังเก็บน้ำทรงกระบอกใบหนึ่งมีรัศมีที่ฐาน 7 เซนติเมตร และมีความสูง 10 เซนติเมตร จะสามารถจุน้ำได้ปริมาตรประมาณเท่าใด (กำหนดให้ \\(\\pi \\approx \\frac{22}{7}\\))",
+      "answerOptions": [
+        { "text": "770 ลูกบาศก์เซนติเมตร", "rationale": "เกิดความคลาดเคลื่อนเนื่องจากลืมนำรัศมีไปยกกำลังสองในสูตร หรือคิดรัศมีเพียงตัวเดียวในขั้นตอนการคูณ", "isCorrect": false },
+        { "text": "1,540 ลูกบาศก์เซนติเมตร", "rationale": "แทนค่าลงในสูตรปริมาตรทรงกระบอก จะได้เป็น \\(\\frac{22}{7}\\) × 7 × 7 × 10 = 1,540 ลูกบาศก์เซนติเมตร", "isCorrect": true },
+        { "text": "440 ลูกบาศก์เซนติเมตร", "rationale": "ตัวลวงนี้เกิดจากการคำนวณสูตรพื้นที่ผิวข้างหรือความยาวเส้นรอบวงแทนการหาปริมาตรเนื้อที่ภายในถังน้ำ", "isCorrect": false },
+        { "text": "3,080 ลูกบาศก์เซนติเมตร", "rationale": "เกิดจากการคำนวณที่นำพจน์ทั้งหมดไปคูณด้วยสองซ้ำซ้อนเกินความจำเป็นในการหาปริมาตรทรงกระบอก", "isCorrect": false }
+      ],
+      "hint": "ใช้สูตรการหาปริมาตรทรงกระบอก V = πr^2h โดยแทนค่ารัศมีและความสูงตามที่โจทย์กำหนด"
+    },
+    {
+      "questionNumber": 10,
+      "question": "ปัจจุบันพ่อมีอายุเป็น 3 เท่าของลูก ถ้าในอีก 5 ปีข้างหน้า อายุของพ่อและลูกรวมกันได้ 66 ปี อยากทราบว่าปัจจุบันลูกมีอายุกี่ปี",
+      "answerOptions": [
+        { "text": "12 ปี", "rationale": "เกิดจากการตั้งสมการโดยลืมบวกอายุเพิ่มขึ้นคนละ 5 ปีให้กับทั้งพ่อและลูก ทำให้คำนวณอายุออกมาน้อยกว่าความเป็นจริง", "isCorrect": false },
+        { "text": "15 ปี", "rationale": "เป็นตัวเลขที่คาดเดาขึ้นมาเพื่อให้สัมพันธ์กับจำนวนปีที่เพิ่มขึ้นในโจทย์ แต่ไม่สอดคล้องกับเงื่อนไขผลรวมอายุ 66 ปี", "isCorrect": false },
+        { "text": "14 ปี", "rationale": "จากสมการอายุในอีก 5 ปีข้างหน้าคือ (x+5) + (3x+5) = 66 จะได้ 4x + 10 = 66 และแก้สมการหาอายุลูกปัจจุบันได้เท่ากับ 14 ปี", "isCorrect": true },
+        { "text": "16 ปี", "rationale": "ตัวลวงนี้เกิดจากการย้ายข้างหรือแก้สมการทางคณิตศาสตร์สลับเครื่องหมายจนได้ตัวเลขผิดพลาด", "isCorrect": false }
+      ],
+      "hint": "ตั้งสมการโดยให้ปัจจุบันลูกอายุ x ปี ดังนั้นพ่ออายุ 3x ปี แล้วพิจารณาอายุของทั้งสองคนเมื่อเวลาผ่านไป 5 ปี"
+    },
+    {
+      "questionNumber": 11,
+      "question": "เซตคำตอบของอสมการ 3x - 5 < 2x + 4 ตรงกับข้อใด",
+      "answerOptions": [
+        { "text": "x < 9", "rationale": "เมื่อย้ายข้างสมการจะได้ 3x - 2x < 4 + 5 ซึ่งลดรูปเหลือเพียง x < 9 เป็นคำตอบสุดท้ายของอสมการนี้", "isCorrect": true },
+        { "text": "x > 9", "rationale": "เกิดจากความสับสนในทิศทางของเครื่องหมายอสมการในระหว่างขั้นตอนการย้ายข้างจัดรูปตัวแปร", "isCorrect": false },
+        { "text": "x < 1", "rationale": "เกิดจากการคำนวณเครื่องหมายผิดพลาด เช่น นำ 4 มาลบด้วย 5 แทนที่จะนำมาบวกกันเมื่อย้ายข้างสมการ", "isCorrect": false },
+        { "text": "x > 1", "rationale": "เกิดจากการคำนวณเครื่องหมายผิดพลาดร่วมกับความสับสนในการคงทิศทางของเครื่องหมายอสมการฝั่งตรงข้าม", "isCorrect": false }
+      ],
+      "hint": "ย้ายข้างตัวแปร x มาไว้ฝั่งเดียวกัน และย้ายตัวเลขคงที่ไปไว้อีกฝั่งหนึ่งเพื่อหาค่าสัมประสิทธิ์"
+    },
+    {
+      "questionNumber": 12,
+      "question": "ในฟาร์มแห่งหนึ่งมีไก่และหมูรวมกัน 35 ตัว เมื่อนับจำนวนขาของสัตว์ทั้งสองชนิดรวมกันได้ 110 ขา อยากทราบว่าในฟาร์มนี้มีหมูทั้งหมดกี่ตัว",
+      "answerOptions": [
+        { "text": "15 ตัว", "rationale": "ตัวเลขนี้คือจำนวนของไก่ในฟาร์ม ไม่ใช่จำนวนของหมูตามที่โจทย์ตั้งคำถามไว้", "isCorrect": false },
+        { "text": "20 ตัว", "rationale": "ให้หมูมี p ตัว ไก่มี 35-p ตัว สมการจำนวนขาคือ 4p + 2(35-p) = 110 จะได้ 2p = 40 ดังนั้นในฟาร์มมีหมู 20 ตัว", "isCorrect": true },
+        { "text": "25 ตัว", "rationale": "เกิดจากความคลาดเคลื่อนในการสลับสมการจำนวนขาระหว่างไก่กับหมู ทำให้ได้คำตอบสลับชนิดสัตว์กัน", "isCorrect": false },
+        { "text": "10 ตัว", "rationale": "เป็นตัวลวงที่เกิดจากการคำนวณเลขผิดพลาดในขั้นตอนกระจายพจน์หรือการตัดทอนตัวเลขในสมการเชิงเส้น", "isCorrect": false }
+      ],
+      "hint": "สร้างระบบสมการสองตัวแปร หรือสมมติตัวแปรเดียวเป็นจำนวนหมู โดยจำไว้ว่าไก่มี 2 ขา และหมูมี 4 ขา"
+    },
+    {
+      "questionNumber": 13,
+      "question": "เสาธงต้นหนึ่งทอดเงาลงบนพื้นยาว 12 เมตร ในขณะเดียวกัน ต้นไม้ที่สูง 2 เมตร ทอดเงายาว 3 เมตร เสาธงต้นนี้จะมีความสูงกี่เมตร",
+      "answerOptions": [
+        { "text": "6 เมตร", "rationale": "เกิดจากการเทียบสัดส่วนผิดพลาด เช่น คิดว่าความสูงเป็นครึ่งหนึ่งของความยาวเงาของเสาธงโดยไม่ได้อิงข้อมูลของต้นไม้", "isCorrect": false },
+        { "text": "9 เมตร", "rationale": "เกิดจากการคำนวณสัดส่วนสลับตำแหน่งกันระหว่างความยาวเงาและความสูงจริงของวัตถุ", "isCorrect": false },
+        { "text": "8 เมตร", "rationale": "จากหลักการความคล้าย อัตราส่วนความสูงต่อความยาวเงาคือ h/12 = 2/3 จะได้ความสูงของเสาธงเท่ากับ 8 เมตร", "isCorrect": true },
+        { "text": "18 เมตร", "rationale": "ตัวลวงที่เกิดจากการนำความยาวเงาของเสาธงไปคูณกับความยาวเงาของต้นไม้แล้วหารด้วยความสูงสลับด้าน", "isCorrect": false }
+      ],
+      "hint": "ใช้หลักการของสามเหลี่ยมที่คล้ายกัน โดยตั้งอัตราส่วนระหว่างความสูงต่อความยาวเงาของวัตถุทั้งสองชิ้น"
+    },
+    {
+      "questionNumber": 14,
+      "question": "ขนาดของมุมภายในแต่ละมุมของรูปหกเหลี่ยมด้านเท่ามุมเท่า มีค่ากี่องศา",
+      "answerOptions": [
+        { "text": "108 องศา", "rationale": "ค่านี้เป็นขนาดของมุมภายในแต่ละมุมของรูปห้าเหลี่ยมด้านเท่ามุมเท่า ไม่ใช่รูปหกเหลี่ยมตามที่โจทย์ถาม", "isCorrect": false },
+        { "text": "120 องศา", "rationale": "ผลรวมมุมภายในของรูปหกเหลี่ยมเท่ากับ (6-2) × 180 = 720 องศา เมื่อนำมาแบ่งให้มุมทั้ง 6 มุมเท่าๆ กัน จะตกมุมละ 120 องศา", "isCorrect": true },
+        { "text": "135 องศา", "rationale": "ค่านี้เป็นขนาดของมุมภายในแต่ละมุมของรูปแปดเหลี่ยมด้านเท่ามุมเท่า ซึ่งมีจำนวนเหลี่ยมมากกว่ารูปหกเหลี่ยม", "isCorrect": false },
+        { "text": "90 องศา", "rationale": "เป็นขนาดมุมภายในของรูปสี่เหลี่ยมจัตุรัส ซึ่งความกว้างของมุมจะแคบกว่ารูปหลายเหลี่ยมด้านเท่าที่มีจำนวนด้านมากๆ", "isCorrect": false }
+      ],
+      "hint": "ใช้สูตรผลรวมมุมภายในของรูป n เหลี่ยม คือ (n-2) × 180 องศา แล้วหารด้วยจำนวนมุมทั้งหมด"
+    },
+    {
+      "questionNumber": 15,
+      "question": "คะแนนสอบวิชาคณิตศาสตร์ของนักเรียน 4 คน คือ 12, 15, x และ 18 คะแนน ถ้าค่าเฉลี่ยเลขคณิตของคะแนนสอบชุดนี้เท่ากับ 16 คะแนน แล้ว x มีค่าเท่าใด",
+      "answerOptions": [
+        { "text": "16", "rationale": "ตัวลวงที่หยิบเอาค่าเฉลี่ยเลขคณิตที่โจทย์กำหนดมาตอบโดยตรงโดยไม่มีการคำนวณเพื่อหาค่าของตัวแปร x", "isCorrect": false },
+        { "text": "17", "rationale": "เกิดจากความผิดพลาดในการรวมคะแนนของเด็กทั้ง 3 คนแรก หรือการย้ายข้างสมการผิดพลาดในใจ", "isCorrect": false },
+        { "text": "19", "rationale": "จากสูตรค่าเฉลี่ย (12 + 15 + x + 18)/4 = 16 จะได้ผลรวมคือ 45 + x = 64 เมื่อย้ายข้างจะได้ค่า x = 19", "isCorrect": true },
+        { "text": "20", "rationale": "เป็นตัวเลขกลมๆ ที่สร้างขึ้นเป็นตัวลวงเพื่อดึงดูดความสนใจหากผู้เรียนไม่ได้คิดคำนวณตามหลักการที่ถูกต้อง", "isCorrect": false }
+      ],
+      "hint": "ค่าเฉลี่ยเลขคณิตเกิดจากผลรวมของข้อมูลทั้งหมดหารด้วยจำนวนข้อมูล ลองตั้งสมการย้อนกลับเพื่อหาค่า x"
+    },
+    {
+      "questionNumber": 16,
+      "question": "ข้อมูลชุดหนึ่งประกอบด้วยจำนวนดังต่อไปนี้: 5, 8, 3, 5, 10, 7, 5, 9 ค่ามัธยฐานของข้อมูลชุดนี้มีค่าเท่ากับเท่าใด",
+      "answerOptions": [
+        { "text": "5", "rationale": "ตัวเลขนี้คือค่าฐานนิยม (ข้อมูลที่มีความถี่สูงสุด) ไม่ใช่ค่ามัธยฐานตามที่โจทย์ต้องการ", "isCorrect": false },
+        { "text": "6", "rationale": "เมื่อเรียงลำดับข้อมูลใหม่จากน้อยไปมากจะได้ 3, 5, 5, 5, 7, 8, 9, 10 ซึ่งค่าตรงกลางคือตำแหน่งที่ 4 และ 5 (5 และ 7) หาค่าเฉลี่ยได้เท่ากับ 6", "isCorrect": true },
+        { "text": "6.5", "rationale": "เกิดจากการนับตำแหน่งพจน์ตรงกลางผิดพลาด ทำให้อ้างอิงตัวเลขผิดตัวในการนำมาหาค่าเฉลี่ยเพื่อระบุค่ามัธยฐาน", "isCorrect": false },
+        { "text": "7", "rationale": "ตัวเลขนี้เป็นหนึ่งในข้อมูลดิบตรงกลาง แต่ยังไม่ได้ถูกนำไปหาค่าเฉลี่ยรวมกับพจน์ข้างเคียงตามข้อกำหนดของข้อมูลจำนวนคู่", "isCorrect": false }
+      ],
+      "hint": "ก่อนหาค่ามัธยฐาน ต้องเรียงลำดับข้อมูลจากน้อยไปหามากก่อน เนื่องจากข้อมูลมีจำนวนคู่ ให้หาค่าเฉลี่ยของสองตัวตรงกลาง"
+    },
+    {
+      "questionNumber": 17,
+      "question": "ในการโยนเหรียญที่เที่ยงตรง 2 เหรียญพร้อมกัน 1 ครั้ง ความน่าจะเป็นที่เหรียญจะออกหน้าหัวอย่างน้อย 1 เหรียญ เป็นเท่าใด",
+      "answerOptions": [
+        { "text": "1/2", "rationale": "เกิดจากความเข้าใจผิดคิดว่าเหรียญมีโอกาสออกหัวหรือก้อยแค่อย่างละครึ่ง โดยไม่ได้แจกแจงผลลัพธ์ร่วมของทั้งสองเหรียญ", "isCorrect": false },
+        { "text": "1/4", "rationale": "ค่านี้เป็นความน่าจะเป็นของการออกหน้าหัวทั้งสองเหรียญพร้อมกัน หรือออกก้อยทั้งคู่เท่านั้น", "isCorrect": false },
+        { "text": "3/4", "rationale": "ผลลัพธ์ที่เป็นไปได้ทั้งหมดมี 4 แบบคือ (ห,ห), (ห,ก), (ก,ห), (ก,ก) เหตุการณ์ที่มีหัวอย่างน้อย 1 เหรียญมี 3 แบบ ความน่าจะเป็นจึงเป็น 3/4", "isCorrect": true },
+        { "text": "2/3", "rationale": "เป็นตัวลวงที่มักคิดจากเศษส่วนผิดพลาดโดยนำจำนวนเหรียญหรือเงื่อนไขในโจทย์มาตั้งต้นเป็นส่วนแบ่งแบบผิดวิธี", "isCorrect": false }
+      ],
+      "hint": "หาผลลัพธ์ที่เป็นไปได้ทั้งหมดจากการโยนเหรียญสองเหรียญ (Sample Space) ก่อน จากนั้นนับเหตุการณ์ที่มีหัวอย่างน้อยหนึ่งตัว"
+    },
+    {
+      "questionNumber": 18,
+      "question": "ข้อใดคือการแยกตัวประกอบของพหุนาม x^2 - 5x - 14 ได้อย่างถูกต้อง",
+      "answerOptions": [
+        { "text": "(x - 7)(x + 2)", "rationale": "กระจายพจน์จะได้ x^2 + 2x - 7x - 14 = x^2 - 5x - 14 สอดคล้องกับพหุนามต้นแบบพอดี", "isCorrect": true },
+        { "text": "(x + 7)(x - 2)", "rationale": "เกิดจากความสับสนเรื่องเครื่องหมายของจำนวนหน้าพจน์กลาง ทำให้เวลาคูณกระจายแล้วได้ผลลัพธ์เป็น +5x แทนที่จะเป็น -5x", "isCorrect": false },
+        { "text": "(x - 14)(x + 1)", "rationale": "พิจารณาคู่ตัวเลขที่คูณกันได้ -14 แต่เมื่อนำมารวมกันจะได้ -13 ซึ่งไม่ตรงกับพจน์กลางที่โจทย์กำหนด", "isCorrect": false },
+        { "text": "(x - 5)(x + 14)", "rationale": "เป็นตัวลวงที่นำตัวเลขสัมประสิทธิ์พจน์กลางและพจน์ท้ายของโจทย์มาใส่ในวงเล็บโดยตรงโดยไม่ผ่านกระบวนการแยกตัวประกอบที่ถูกวิธี", "isCorrect": false }
+      ],
+      "hint": "มองหาจำนวนสองจำนวนที่คูณกันได้ -14 และเมื่อนำมารวมกันหรือบวกกันจะได้ -5"
+    },
+    {
+      "questionNumber": 19,
+      "question": "กราฟของสมการเชิงเส้น 2x + 3y = 12 จะตัดแกน X ที่จุดพิกัดใด",
+      "answerOptions": [
+        { "text": "(0, 4)", "rationale": "จุดนี้เป็นจุดตัดแกน Y ของสมการเชิงเส้นนี้ ซึ่งเกิดขึ้นเมื่อแทนค่าพิกัด x = 0 แทนที่จะเป็นจุดตัดแกน X", "isCorrect": false },
+        { "text": "(6, 0)", "rationale": "จุดตัดแกน X จะเกิดเมื่อ y = 0 เมื่อแทนค่าลงในสมการจะได้ 2x + 3(0) = 12 ส่งผลให้ได้ 2x = 12 และ x = 6", "isCorrect": true },
+        { "text": "(-6, 0)", "rationale": "เกิดจากความสับสนในเรื่องเครื่องหมายระหว่างพจน์เวลาทำการย้ายข้างสมการคณิตศาสตร์", "isCorrect": false },
+        { "text": "(4, 0)", "rationale": "ตัวลวงนี้เกิดจากการสลับตัวเลขสัมประสิทธิ์หน้าตัวแปร x และ y ในตอนที่คำนวณจุดตัดแกน", "isCorrect": false }
+      ],
+      "hint": "จุดที่กราฟตัดแกน X จะมีค่าพิกัด y เป็น 0 เสมอ ให้ลองแทนค่า y = 0 ลงในสมการ"
+    },
+    {
+      "questionNumber": 20,
+      "question": "พิจารณาแบบรูปของจำนวนต่อไปนี้: 2, 5, 10, 17, 26, ... จำนวนถัดไปในแบบรูปนี้คือจำนวนใด",
+      "answerOptions": [
+        { "text": "35", "rationale": "เกิดจากการเพิ่มจำนวนพจน์ถัดไปด้วยอัตราการเติบโตคงที่หรือบวกเพิ่มด้วยเลขคี่พจน์เดิมซ้ำโดยลืมขยับอันดับความสัมพันธ์", "isCorrect": false },
+        { "text": "39", "rationale": "เป็นตัวลวงที่เกิดจากการบวกเลขคลาดเคลื่อนไปจากความสัมพันธ์ของลำดับอนุกรมจริง", "isCorrect": false },
+        { "text": "37", "rationale": "เมื่อพิจารณาผลต่างระหว่างพจน์จะพบว่าเพิ่มขึ้นในลักษณะของจำนวนคี่คือ +3, +5, +7, +9 ดังนั้นพจน์ถัดไปจึงเพิ่มขึ้น +11 ยอดรวมเป็น 26 + 11 = 37", "isCorrect": true },
+        { "text": "41", "rationale": "เกิดจากการเดาตัวเลขถัดไปที่เป็นจำนวนเฉพาะโดยไม่ได้วิเคราะห์รูปแบบระยะห่างของข้อมูลที่กำหนดให้ถี่ถ้วน", "isCorrect": false }
+      ],
+      "hint": "ลองสังเกตผลต่างระหว่างสองจำนวนที่อยู่ติดกันว่ามีความสัมพันธ์เพิ่มขึ้นทีละเท่าใด หรือสังเกตความสัมพันธ์กับเลขยกกำลังสอง"
+    }
+  ]
+};
+
+// State manager
+let state = {
+  questions: [...quizData.questions],
+  current: 0,
+  answers: new Array(quizData.questions.length).fill(null),
+  checked: new Array(quizData.questions.length).fill(false)
+};
+
+function renderApp() {
+  const app = document.getElementById('quiz-app');
+  
+  if (state.current >= state.questions.length) {
+    renderSummary(app);
+    return;
+  }
+
+  const q = state.questions[state.current];
+  const pct = Math.round((state.current / state.questions.length) * 100);
+  const selectedIdx = state.answers[state.current];
+  const isChecked = state.checked[state.current];
+
+  let hintHtml = q.hint ? `<div class="hint-box">💡 <b>คำใบ้แนวคิด:</b> ${q.hint}</div>` : '';
+  
+  let optionsHtml = q.answerOptions.map((opt, idx) => {
+    let cls = 'option-item';
+    if (selectedIdx === idx) cls += ' selected';
+    if (isChecked) {
+      cls += ' disabled';
+      if (opt.isCorrect) cls += ' correct-reveal';
+      else if (selectedIdx === idx) cls += ' wrong-reveal';
+    }
+    return `
+      <div class="${cls}" onclick="selectAnswer(${idx})">
+        <span class="radio-dot"></span>
+        <div style="flex-grow:1;">${opt.text}</div>
+      </div>
+    `;
+  }).join('');
+
+  let feedbackHtml = '';
+  if (isChecked && selectedIdx !== null) {
+    const isCorrect = q.answerOptions[selectedIdx].isCorrect;
+    const rationale = q.answerOptions[selectedIdx].rationale;
+    feedbackHtml = `
+      <div class="rationale-box ${isCorrect ? 'correct' : 'wrong'}">
+        <b>${isCorrect ? '✨ ถูกต้องครับ!' : '❌ ยังไม่ถูกนะ'}</b> — ${rationale}
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="progress-container">
+        <span>ข้อที่ ${state.current + 1} จาก ${state.questions.length}</span>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        <span>${pct}%</span>
+      </div>
+      
+      <div class="question-text">${q.question}</div>
+      ${hintHtml}
+      <div class="options-list">${optionsHtml}</div>
+      ${feedbackHtml}
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" onclick="goPrev()" ${state.current === 0 ? 'disabled' : ''}>⬅️ ก่อนหน้า</button>
+        ${!isChecked ? 
+          `<button class="btn btn-primary" onclick="checkAnswer()" ${selectedIdx === null ? 'disabled' : ''}>✔️ ตรวจคำตอบ</button>` :
+          `<button class="btn btn-primary" onclick="goNext()">${state.current === state.questions.length - 1 ? '🏁 ดูสรุปคะแนน' : 'ถัดไป ➡️'}</button>`
+        }
+      </div>
+    </div>
+  `;
+  
+  // ให้ MathJax ประมวลผลสูตรคณิตศาสตร์ใหม่ทุกครั้งที่เปลี่ยนข้อ
+  if (window.MathJax) {
+    MathJax.typesetPromise();
+  }
+}
+
+function renderSummary(app) {
+  let score = 0;
+  let reviewHtml = '';
+
+  state.questions.forEach((q, i) => {
+    const userAnsIdx = state.answers[i];
+    const isCorrect = userAnsIdx !== null && q.answerOptions[userAnsIdx].isCorrect;
+    if (isCorrect) score++;
+
+    let correctOpt = q.answerOptions.find(o => o.isCorrect);
+    let userOpt = userAnsIdx !== null ? q.answerOptions[userAnsIdx] : null;
+
+    reviewHtml += `
+      <div class="review-item">
+        <div style="font-weight:600;margin-bottom:4px;">ข้อ ${i+1}: ${q.question}</div>
+        <div style="color:${isCorrect ? 'var(--green)' : 'var(--red)'}; font-weight:500;">
+          ${isCorrect ? '🔹 ตอบถูก' : `🔸 ตอบผิด (คุณตอบ: ${userOpt ? userOpt.text : 'ไม่ได้ตอบ'})`}
+        </div>
+        <div style="color:var(--text-muted);font-size:13px;margin-top:2px;">
+          <b>คำอธิบาย:</b> ${correctOpt ? correctOpt.rationale : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  const pct = Math.round((score / state.questions.length) * 100);
+  const isPass = pct >= 60;
+  const grade = isPass ? "ผ่านเกณฑ์ 👤" : "ควรทบทวนอีกครั้ง 📚";
+  const gc = isPass ? "grade-pass" : "grade-fail";
+  const msg = isPass ? "ยอดเยี่ยมมากครับ! คุณมีความเข้าใจในคณิตศาสตร์ประยุกต์เป็นอย่างดี" : "พยายามอีกนิดนะครับ ลองอ่านคำอธิบายในข้อที่ผิดเพื่อเพิ่มความเข้าใจ";
+
+  app.innerHTML = `
+    <div class="card summary-card">
+      <h2 style="font-size:22px;margin-bottom:8px;">📊 ผลการทดสอบของคุณ</h2>
+      <div style="font-size:15px;color:var(--text-muted);">ทำคะแนนได้รวมทั้งสิ้น ${score} จาก ${state.questions.length} ข้อ</div>
+      <div style="margin:16px 0;"><span class="grade-pill ${gc}">${grade}</span></div>
+      <div style="color:var(--text-muted);margin-bottom:24px;font-size:14px;">${msg}</div>
+      
+      <div class="grid-stats">
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)">${score}</div><div class="slbl">ถูก (ข้อ)</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)">${state.questions.length - score}</div><div class="slbl">ผิด (ข้อ)</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--primary)">${pct}%</div><div class="slbl">คะแนนเฉลี่ย</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="restartQuiz()">🔄 ทำแบบทดสอบอีกครั้ง</button>
+    </div>
+    
+    <div class="card" style="margin-top:4px;">
+      <div class="review-title">📋 เฉลยละเอียดและแนวคิดบทวิเคราะห์</div>
+      ${reviewHtml}
+    </div>
+  `;
+
+  if (window.MathJax) {
+    MathJax.typesetPromise();
+  }
+}
+
+function selectAnswer(i) { if (!state.checked[state.current]) { state.answers[state.current] = i; renderApp(); } }
+function checkAnswer()   { if (state.answers[state.current] !== null) { state.checked[state.current] = true; renderApp(); } }
+function goNext()        { state.current++; renderApp(); }
+function goPrev()        { if (state.current > 0) { state.current--; renderApp(); } }
+function restartQuiz() {
+  state.current = 0;
+  state.answers = new Array(quizData.questions.length).fill(null);
+  state.checked = new Array(quizData.questions.length).fill(false);
+  renderApp();
+}
+
+// Start app
+renderApp();
+</script>
+</body>
+</html>
