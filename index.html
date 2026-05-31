@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบทดสอบคณิตศาสตร์ ม.ต้น (N-NET)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0284c7; --primary-dark: #0369a1; --primary-light: #e0f2fe;
+    --green: #15803d; --green-light: #dcfce7;
+    --red: #b91c1c; --red-light: #fee2e2;
+    --amber: #b45309; --amber-light: #fef3c7;
+    --gray-bg: #f8fafc; --gray-card: #ffffff; --gray-border: #e2e8f0;
+    --text: #0f172a; --text-muted: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--gray-bg); color: var(--text); padding-bottom: 60px; }
+  .container { max-width: 680px; margin: 0 auto; padding: 16px; }
+  
+  .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 16px; padding: 24px; color: #fff; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(2,132,199,0.15); }
+  .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+  .title { font-size: 22px; font-weight: 700; margin-bottom: 5px; line-height: 1.4; }
+  .subtitle { font-size: 14px; opacity: 0.9; }
+
+  .card { background: var(--gray-card); border-radius: 16px; padding: 24px; border: 1px solid var(--gray-border); margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+  
+  .inp-group { margin-bottom: 16px; text-align: left; }
+  .inp-label { display: block; font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+  .inp-text { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--gray-border); font-family: 'Sarabun', sans-serif; font-size: 16px; background: #fdfdfd; }
+  
+  .btn { width: 100%; padding: 14px; border-radius: 10px; border: none; font-family: 'Sarabun', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; }
+  .btn-secondary { background: #e2e8f0; color: var(--text); width: 48%; }
+  
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
+  .nav-buttons .btn-primary { width: 48%; }
+
+  .prog-text { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .prog-bar { background: #e2e8f0; height: 10px; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+  .prog-fill { background: var(--primary); height: 100%; width: 0%; transition: 0.3s; }
+
+  .q-badge { font-size: 12px; color: var(--primary-dark); background: var(--primary-light); display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 700; margin-bottom: 12px; }
+  .q-text { font-size: 18px; font-weight: 600; margin-bottom: 20px; line-height: 1.6; }
+
+  .choices { display: flex; flex-direction: column; gap: 12px; }
+  .choice { display: flex; align-items: center; background: #fff; border: 2px solid var(--gray-border); padding: 14px 16px; border-radius: 12px; cursor: pointer; font-size: 15px; font-family: 'Sarabun', sans-serif; text-align: left; transition: 0.2s; width: 100%; min-height: 60px; }
+  
+  .choice.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); font-weight: 600; }
+  .choice.correct { border-color: var(--green); background: var(--green-light); color: var(--green); font-weight: 600; }
+  .choice.wrong { border-color: var(--red); background: var(--red-light); color: var(--red); font-weight: 600; }
+  
+  .c-let { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; border-radius: 50%; margin-right: 15px; font-weight: 700; font-size: 14px; flex-shrink: 0; color: var(--text-muted); }
+  .choice.selected .c-let { background: var(--primary); color: #fff; }
+  .choice.correct .c-let { background: var(--green); color: #fff; }
+  .choice.wrong .c-let { background: var(--red); color: #fff; }
+
+  .feedback { padding: 16px; border-radius: 12px; font-size: 14px; line-height: 1.6; margin-top: 16px; }
+  .feedback.ok { background: var(--green-light); border: 1px solid var(--green); color: var(--green); }
+  .feedback.no { background: var(--red-light); border: 1px solid var(--red); color: var(--red); }
+  .fb-explain { font-size: 13px; color: #334155; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px; margin-top: 10px; display: block; border-left: 3px solid var(--text-muted); }
+  
+  /* ระบบวิเคราะห์ข้อมูลผู้เรียน */
+  .analysis-card { background: #ffffff; border: 1px solid var(--gray-border); border-radius: 16px; padding: 24px; text-align: left; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  .analysis-header { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .analysis-item { background: #f8fafc; padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #cbd5e1; }
+  .analysis-item.weak { border-left-color: var(--red); background: #fff5f5; }
+  .analysis-item.good { border-left-color: var(--green); background: #f6fdf9; }
+  .analysis-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; }
+  .analysis-tag.weak { background: var(--red-light); color: var(--red); }
+  .analysis-tag.good { background: var(--green-light); color: var(--green); }
+
+  .grid-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 20px 0; }
+  .stat-box { background: #f8fafc; padding: 16px 10px; border-radius: 12px; text-align: center; border: 1px solid var(--gray-border); }
+  .stat-num { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .stat-num.green { color: var(--green); }
+  .stat-num.red { color: var(--red); }
+  .stat-num.blue { color: var(--primary); }
+  
+  .review-item { padding: 16px 0; border-bottom: 1px solid var(--gray-border); text-align: left; }
+  .review-item:last-child { border-bottom: none; }
+  .r-q { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .r-a { font-size: 14px; margin-bottom: 4px; }
+  .ri-tick { display: inline-block; width: 20px; font-weight: bold; margin-right: 5px; }
+  .ri-tick.ok { color: var(--green); }
+  .ri-tick.no { color: var(--red); }
+
+  .dot-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; justify-content: center; }
+  .dot { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--gray-border); font-family: 'Sarabun'; font-weight: 600; font-size: 12px; cursor: pointer; background: #fff; color: var(--text); }
+  .dot.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .dot.ok { background: var(--green-light); color: var(--green); border-color: var(--green); }
+  .dot.no { background: var(--red-light); color: var(--red); border-color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">N-NET • สกร. มัธยมศึกษาตอนต้น</div>
+    <div class="title">📐 แบบทดสอบวิชาคณิตศาสตร์</div>
+    <div class="subtitle" id="subtitle-text">ระบบวิเคราะห์จุดอ่อนและสมรรถนะการเรียนรู้รายบุคคล</div>
+  </div>
+  
+  <div id="app"></div>
+</div>
+
+<script>
+// คลังข้อสอบวิชาคณิตศาสตร์ ม.ต้น จำนวน 20 ข้อ เน้นตัวลวงและโจทย์ประยุกต์
+const database = [
+  { cat: "จำนวนและการดำเนินการ", q: "ถ้าหากอุณหภูมิยอดดอยอินทนนท์ในตอนเช้าเท่ากับ -3 องศาเซลเซียส พอตกบ่ายอุณหภูมิเพิ่มขึ้นอีก 8 องศาเซลเซียส และในช่วงดึกอุณหภูมิลดลงไป 6 องศาเซลเซียส อยากทราบว่าอุณหภูมิในช่วงดึกเป็นกี่องศาเซลเซียส?", choices: ["-1 องศาเซลเซียส", "1 องศาเซลเซียส", "-11 องศาเซลเซียส", "11 องศาเซลเซียส"], a: 0, exp: "คำนวณตามขั้นตอน: เริ่มต้นจาก -3 เพิ่มขึ้น 8 คือ (-3) + 8 = 5 จากนั้นลดลง 6 คือ 5 - 6 = -1 องศาเซลเซียส (ตัวลวง 1 เกิดจากการคำนวณเครื่องหมายผิดพลาด)" },
+  { cat: "จำนวนและการดำเนินการ", q: "ร้านค้าขายเสื้อผ้าตัวหนึ่งราคา 450 บาท หากร้านค้าประกาศลดราคา 20% แต่มีค่าภาษีมูลค่าเพิ่ม (VAT) 7% คิดจากราคาส่วนลดแล้ว ลูกค้าจะต้องจ่ายเงินรวมทั้งหมดกี่บาท?", choices: ["385.20 บาท", "360.00 บาท", "391.50 บาท", "418.50 บาท"], a: 0, exp: "ลดราคา 20% จะเหลือราคาเสื้อ = 450 x 0.80 = 360 บาท ต่อมาคิด VAT 7% จากราคาส่วนลด = 360 x 1.07 = 385.20 บาท" },
+  { cat: "จำนวนและการดำเนินการ", q: "เสาไฟต้นหนึ่งตั้งอยู่ห่างกันทุกๆ 12 เมตร ส่วนต้นไม้ปลูกห่างกันทุกๆ 16 เมตร ถ้าเริ่มต้นปลูกต้นไม้ตรงกับเสาไฟต้นแรกพอดี อยากทราบว่าในครั้งถัดไปต้นไม้จะตรงกับเสาไฟที่ระยะห่างจากจุดเริ่มต้นกี่เมตร?", choices: ["48 เมตร", "96 เมตร", "4 เมตร", "192 เมตร"], a: 0, exp: "โจทย์ข้อนี้เป็นการหา ค.ร.น. ของ 12 และ 16 เพื่อหาจุดร่วมถัดไป ค.ร.น. ของ 12 และ 16 คือ 48 เมตร (ตัวเลือก 4 คือ ห.ร.ม. ซึ่งเป็นตัวลวง)" },
+  { cat: "พีชคณิต", q: "ห้องเรียนหนึ่งมีจำนวนนักเรียนหญิงเป็น 2 เท่าของนักเรียนชาย ถ้าหากมีนักเรียนชายย้ายออกไป 5 คน และมีนักเรียนหญิงย้ายเข้ามาเพิ่ม 3 คน จะทำให้มีนักเรียนหญิงเป็น 3 เท่าของนักเรียนชาย เดิมห้องนี้มีนักเรียนทั้งหมดกี่คน?", choices: styleChoices(["54 คน", "18 คน", "36 คน", "45 คน"]), a: 0, exp: "ให้ชายเป็น x หญิงเป็น 2x ย้ายออก/เข้า: 2x + 3 = 3(x - 5) จะได้ 2x + 3 = 3x - 15 ย้ายข้างได้ x = 18 ดังนั้นเดิมมี ชาย 18 หญิง 36 รวมเป็น 54 คน" },
+  { cat: "พีชคณิต", q: "ผลบวกของเลขจำนวนเต็มสามจำนวนเรียงกัน มีค่าเท่ากับ 108 อยากทราบว่าจำนวนที่มากที่สุดมีค่าเท่าใด?", choices: ["37", "35", "36", "38"], a: 0, exp: "ให้เลขสามจำนวนเป็น x-1, x, x+1 จะได้ผลรวมเป็น 3x = 108 ดังนั้น x = 36 เลขทั้งสามตัวคือ 35, 36, 37 จำนวนที่มากที่สุดจึงตอบ 37" },
+  { cat: "การวัดและเรขาคณิต", q: "ถังน้ำทรงกระบอกใบหนึ่งมีเส้นผ่านศูนย์กลางภายใน 14 เซนติเมตร มีน้ำอยู่ลึก 10 เซนติเมตร หากใส่น้ำเพิ่มลงไปอีกจนระดับน้ำลึกเป็น 15 เซนติเมตร ปริมาตรของน้ำที่เพิ่มขึ้นเท่ากับกี่ลูกบาศก์เซนติเมตร? (กำหนดให้ π ≈ 22/7)", choices: ["770 ลูกบาศก์เซนติเมตร", "3,080 ลูกบาศก์เซนติเมตร", "154 ลูกบาศก์เซนติเมตร", "2,310 ลูกบาศก์เซนติเมตร"], a: 0, exp: "ความสูงน้ำที่เพิ่มขึ้นคือ 5 ซม. รัศมี (r) = 14/2 = 7 ซม. สูตรปริมาตรทรงกระบอก = πr²h = (22/7) x 7 x 7 x 5 = 770 ลบ.ซม. (ตัวลวง 3,080 มาจากการลืมหารเส้นผ่านศูนย์กลางเป็นรัศมี)" },
+  { cat: "การวัดและเรขาคณิต", q: "ที่ดินรูปสี่เหลี่ยมผืนผ้าผืนหนึ่งกว้าง 15 วา ยาว 20 วา ต้องการทำรั้วรอบที่ดินผืนนี้ โดยเว้นประตูทางเข้ากว้าง 4 เมตร อยากทราบว่าต้องทำรั้วยาวกี่เมตร? (กำหนดให้ 1 วา = 2 เมตร)", choices: ["136 เมตร", "66 เมตร", "140 เมตร", "70 เมตร"], a: 0, exp: "แปลงหน่วยเป็นเมตรก่อน: กว้าง = 15 x 2 = 30 เมตร, ยาว = 20 x 2 = 40 เมตร เส้นรอบรูป = 2(30+40) = 140 เมตร เว้นประตู 4 เมตร เหลือความยาวรั้ว = 140 - 4 = 136 เมตร" },
+  { cat: "การวัดและเรขาคณิต", q: "สมชายเดินจากบ้านไปทางทิศเหนือ 9 กิโลเมตร เลี้ยวไปทางทิศตะวันออก 12 กิโลเมตร แล้วหยุดพัก อยากทราบว่าจุดที่สมชายหยุดพักอยู่ห่างจากบ้านที่เป็นจุดเริ่มต้นเป็นระยะทางตรงกี่กิโลเมตร?", choices: ["15 กิโลเมตร", "21 กิโลเมตร", "13 กิโลเมตร", "225 กิโลเมตร"], a: 0, exp: "ใช้ทฤษฎีบทพีทาโกรัส: c² = a² + b² = 9² + 12² = 81 + 144 = 225 จะได้ c = √225 = 15 กิโลเมตร" },
+  { cat: "สถิติและความน่าจะเป็น", q: "กล่องใบหนึ่งมีลูกบอลสีแดง 4 ลูก สีขาว 3 ลูก และสีน้ำเงิน 5 ลูก สุ่มหยิบลูกบอลพร้อมกัน 1 ลูก ความน่าจะเป็นที่จะหยิบได้ลูกบอลที่ 'ไม่ใช่สีขาว' มีค่าเท่าใด?", choices: ["3/4", "1/4", "7/12", "5/12"], a: 0, exp: "จำนวนลูกบอลทั้งหมด = 4 + 3 + 5 = 12 ลูก ลูกบอลที่ไม่ใช่สีขาวคือสีแดงและน้ำเงิน = 4 + 5 = 9 ลูก ดังนั้น ความน่าจะเป็น P(E) = 9/12 ตัดทอนเป็นเศษส่วนอย่างต่ำได้ 3/4" },
+  { cat: "สถิติและความน่าจะเป็น", q: "ข้อมูลชุดหนึ่งประกอบด้วยเลข 5, 8, 13, 7, 10, 13, 6 ข้อใดกล่าวถูกต้องเกี่ยวกับข้อมูลชุดนี้?", choices: ["ฐานนิยม > มัธยฐาน", "ฐานนิยม = มัธยฐาน", "ค่าเฉลี่ยเลขคณิต > ฐานนิยม", "มัธยฐาน > ค่าเฉลี่ยเลขคณิต"], a: 0, exp: "เรียงข้อมูลใหม่: 5, 6, 7, 8, 10, 13, 13 จะได้ มัธยฐาน = 8, ฐานนิยม = 13, ค่าเฉลี่ย = 62/7 ≈ 8.85 ดังนั้น ฐานนิยม (13) มากกว่า มัธยฐาน (8) จึงถูกต้อง" },
+  { cat: "จำนวนและการดำเนินการ", q: "รูปสารอย่างต่ำของ [ (2³ x 4²) / 8² ] มีค่าตรงกับข้อใด?", choices: ["2", "1", "4", "1/2"], a: 0, exp: "แปลงเป็นฐาน 2: 2³ x (2²)² / (2³)² = 2³ x 2⁴ / 2⁶ = 2⁷ / 2⁶ = 2¹ = 2" },
+  { cat: "พีชคณิต", q: "สมการอสมการต่อไปนี้ 3x - 7 ≤ 5x + 3 ข้อใดเป็นเซตคำตอบที่ถูกต้อง?", choices: ["x ≥ -5", "x ≤ -5", "x ≥ 5", "x ≤ 5"], a: 0, exp: "ย้ายข้างสมการ: 3x - 5x ≤ 3 + 7 จะได้ -2x ≤ 10 ย้าย -2 ไปหารต้องกลับเครื่องหมายอสมการ จะได้ x ≥ 10 / (-2) นั่นคือ x ≥ -5" },
+  { cat: "การวัดและเรขาคณิต", q: "กรวยไอศกรีมหนึ่งอัน มีรัศมีปากกรวย 3 เซนติเมตร สูงเอียง 5 เซนติเมตร ปริมาตรของกรวยนี้จะสามารถบรรจุไอศกรีมได้กี่ลูกบาศก์เซนติเมตร? (ตอบติดค่า π)", choices: ["12π", "15π", "36π", "45π"], a: 0, exp: "หาความสูงตรง (h) จากพีทาโกรัส r=3, l=5 จะได้ h=4 ซม. สูตรปริมาตรกรวย = (1/3)πr²h = (1/3) x π x 3² x 4 = 12π ลบ.ซม." },
+  { cat: "สถิติและความน่าจะเป็น", q: "น้ำหนักเฉลี่ยของนักเรียนกลุ่มหนึ่งจำนวน 9 คน เท่ากับ 45 กิโลกรัม หากมีนักเรียนใหม่เพิ่มเข้ามาอีก 1 คน ทำให้น้ำหนักเฉลี่ยใหม่กลายเป็น 46 กิโลกรัม นักเรียนคนใหม่มีน้ำหนักเท่าใด?", choices: ["55 กิโลกรัม", "46 กิโลกรัม", "50 กิโลกรัม", "60 กิโลกรัม"], a: 0, exp: "ผลรวมน้ำหนักเดิม = 9 x 45 = 405 กิโลกรัม ผลรวมน้ำหนักใหม่ที่มี 10 คน = 10 x 46 = 460 กิโลกรัม น้ำหนักคนใหม่จึงเท่ากับ 460 - 405 = 55 กิโลกรัม" },
+  { cat: "จำนวนและการดำเนินการ", q: "ถ้า 2x : 5 = 6 : 3 แล้ว ค่าของ x ตรงกับข้อใด?", choices: ["5", "2.5", "10", "1.5"], a: 0, exp: "เขียนในรูปเศษส่วนได้ 2x/5 = 6/3 -> 2x/5 = 2 -> 2x = 10 -> x = 5" },
+  { cat: "พีชคณิต", q: "ข้อใดเป็นผลสำเร็จจากการแยกตัวประกอบของพหุนาม x² - 5x - 24 ?", choices: ["(x - 8)(x + 3)", "(x + 8)(x - 3)", "(x - 6)(x - 4)", "(x - 12)(x + 2)"], a: 0, exp: "หาเลขสองจำนวนที่คูณกันได้ -24 และบวกกันได้ -5 นั่นคือ -8 และ +3 แยกได้เป็น (x - 8)(x + 3)" },
+  { cat: "การวัดและเรขาคณิต", q: "แผนผังที่ดินอัตราส่วน 1 : 500 หากในแผนผังวัดความกว้างของที่ดินได้ 6 เซนติเมตร ความกว้างของที่ดินจริงยาวกี่เมตร?", choices: ["30 เมตร", "300 เมตร", "3,000 เมตร", "3 เมตร"], a: 0, exp: "ความยาวจริง = 6 x 500 = 3,000 เซนติเมตร แปลงหน่วยเป็นเมตรโดยหารด้วย 100 จะได้ 30 เมตร" },
+  { cat: "จำนวนและการดำเนินการ", q: "ในการสอบวิชาคณิตศาสตร์ คะแนนเต็ม 60 คะแนน มานะสอบได้คะแนนคิดเป็นร้อยละ 75 อยากทราบว่ามานะทำคะแนนผิดไปกี่คะแนน?", choices: ["15 คะแนน", "45 คะแนน", "25 คะแนน", "20 คะแนน"], a: 0, exp: "มานะได้คะแนน 75% แปลว่าทำผิด 25% ของคะแนนเต็ม คะแนนที่ผิด = 60 x (25/100) = 15 คะแนน (ตัวลวง 45 คือคะแนนที่สอบได้)" },
+  { cat: "พีชคณิต", q: "คู่อันดับใดเป็นจุดตัดของเส้นตรงกราฟสมการ x + y = 5 และ x - y = 1 ?", choices: ["(3, 2)", "(2, 3)", "(4, 1)", "(1, 4)"], a: 0, exp: "นำสมการมารวมกัน: (x+y) + (x-y) = 5 + 1 -> 2x = 6 -> x = 3 แทนค่า x=3 ในสมการแรกได้ y = 2 จุดตัดคือ (3, 2)" },
+  { cat: "สถิติและความน่าจะเป็น", q: "โยนเหรียญเที่ยงตรง 2 เหรียญพร้อมกัน 1 ครั้ง ความน่าจะเป็นที่เหรียญจะออกหน้าหัวอย่างน้อย 1 เหรียญ มีค่าเท่าใด?", choices: ["3/4", "1/4", "1/2", "2/3"], a: 0, exp: "ผลลัพธ์ทั้งหมด (S) = {HH, HT, TH, TT} รวม 4 แบบ เหตุการณ์ออกหัวอย่างน้อย 1 เหรียญ (E) = {HH, HT, TH} รวม 3 แบบ ความน่าจะเป็นจึงเท่ากับ 3/4" }
+];
+
+// Helper Function เพื่อให้จัดตัวเลือกง่าย
+function styleChoices(arr) { return arr; }
+
+let state = {
+  screen: 'login', studentName: '', studentId: '', questions: [], answers: [], checked: [], current: 0
+};
+
+function shuffleArray(arr) {
+  let newArr = arr.slice();
+  for (let i = newArr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+}
+
+function startApp() {
+  const nameInput = document.getElementById('s_name').value;
+  const idInput = document.getElementById('s_id').value;
+  if (!nameInput.trim()) { alert('กรุณากรอกชื่อ-นามสกุลก่อนเข้าสอบครับ'); return; }
+  
+  state.studentName = nameInput;
+  state.studentId = idInput || 'สกร. มัธยมศึกษาตอนต้น';
+  document.getElementById('subtitle-text').innerText = 'ผู้เข้าสอบ: ' + state.studentName;
+  
+  let shuffledDB = shuffleArray(database);
+  state.questions = [];
+  
+  for (let i = 0; i < shuffledDB.length; i++) {
+    let q = shuffledDB[i];
+    let correctText = q.choices[q.a];
+    let newChoices = shuffleArray(q.choices);
+    let newCorrectIndex = newChoices.indexOf(correctText);
+    
+    state.questions.push({
+      cat: q.cat, q: q.q, exp: q.exp, choices: newChoices, correctAnswer: newCorrectIndex
+    });
+  }
+  
+  state.answers = new Array(state.questions.length).fill(null);
+  state.checked = new Array(state.questions.length).fill(false);
+  state.current = 0;
+  state.screen = 'quiz';
+  renderApp();
+}
+
+function renderApp() {
+  const app = document.getElementById('app');
+  if (state.screen === 'login') {
+    app.innerHTML = `
+      <div class="card" style="text-align: center; padding: 40px 20px;">
+        <div style="font-size: 60px; margin-bottom: 10px;">📐</div>
+        <h2 style="color: var(--primary-dark); margin-bottom: 10px;">ระบบเตรียมสอบ N-NET วิชาคณิตศาสตร์</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">แบบทดสอบจำนวน 20 ข้อ ครอบคลุมทักษะการคำนวณและการวิเคราะห์โจทย์ประยุกต์</p>
+        <div class="inp-group">
+          <label class="inp-label">ชื่อ-นามสกุลผู้เข้าสอบ</label>
+          <input type="text" id="s_name" class="inp-text" placeholder="พิมพ์ชื่อและนามสกุลที่นี่">
+        </div>
+        <div class="inp-group">
+          <label class="inp-label">รหัสนักศึกษา / ศูนย์ สกร.</label>
+          <input type="text" id="s_id" class="inp-text" value="ระดับมัธยมศึกษาตอนต้น">
+        </div>
+        <button class="btn btn-primary" style="margin-top: 10px;" onclick="startApp()">เริ่มทำข้อสอบ 🚀</button>
+      </div>
+    `;
+  } 
+  else if (state.screen === 'quiz') {
+    let total = state.questions.length;
+    let curr = state.current;
+    let q = state.questions[curr];
+    let ans = state.answers[curr];
+    let isChecked = state.checked[curr];
+    let pct = Math.round(((curr + 1) / total) * 100);
+    
+    let letters = ['ก', 'ข', 'ค', 'ง'];
+    let choicesHTML = '';
+    
+    for (let i = 0; i < 4; i++) {
+      let cssClass = 'choice';
+      if (isChecked) {
+        if (i === q.correctAnswer) cssClass += ' correct';
+        else if (i === ans && ans !== q.correctAnswer) cssClass += ' wrong';
+      } else {
+        if (i === ans) cssClass += ' selected';
+      }
+      choicesHTML += `<button class="${cssClass}" ${isChecked ? 'disabled' : ''} onclick="selectAnswer(${i})">
+                        <div class="c-let">${letters[i]}</div>
+                        <div>${q.choices[i]}</div>
+                      </button>`;
+    }
+    
+    let fbHTML = isChecked ? (
+      ans === q.correctAnswer 
+        ? `<div class="feedback ok">✅ <strong>คำตอบถูกต้อง!</strong><div class="fb-explain">💡 <strong>แนวคิดหลัก:</strong> ${q.exp}</div></div>`
+        : `<div class="feedback no">❌ <strong>คำตอบยังไม่ถูก</strong> — คำตอบที่ถูกคือข้อที่มีแถบสีเขียว<div class="fb-explain">💡 <strong>แนวคิดและตัวลวง:</strong> ${q.exp}</div></div>`
+    ) : '';
+    
+    let btnPrev = curr > 0 ? `<button class="btn btn-secondary" onclick="goPrev()">← ข้อก่อนหน้า</button>` : `<div style="width:48%"></div>`;
+    let btnNext = isChecked ? (
+      curr === total - 1 ? `<button class="btn btn-primary" onclick="showResult()">ส่งข้อสอบและวิเคราะห์ผล 🏆</button>` : `<button class="btn btn-primary" onclick="goNext()">ข้อถัดไป →</button>`
+    ) : `<button class="btn btn-primary" ${ans === null ? 'disabled' : ''} onclick="checkAnswer()">ตรวจคำตอบ ✓</button>`;
+    
+    let dotsHTML = '<div class="dot-nav">';
+    for (let i = 0; i < total; i++) {
+      let dClass = 'dot';
+      if (i === curr) dClass += ' active';
+      else if (state.checked[i]) dClass += (state.answers[i] === state.questions[i].correctAnswer) ? ' ok' : ' no';
+      dotsHTML += `<button class="${dClass}" onclick="jumpTo(${i})">${i+1}</button>`;
+    }
+    dotsHTML += '</div>';
+
+    app.innerHTML = `
+      <div class="card" style="padding: 16px 20px;">
+        <div class="prog-text"><span>ข้อที่ ${curr + 1} จาก ${total}</span><span>ความคืบหน้า ${pct}%</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width: ${pct}%"></div></div>
+      </div>
+      <div class="card">
+        <div class="q-badge">${q.cat}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="choices">${choicesHTML}</div>
+        ${fbHTML}
+        <div class="nav-buttons">${btnPrev}${btnNext}</div>
+      </div>
+      ${dotsHTML}
+    `;
+  }
+  else if (state.screen === 'result') {
+    let total = state.questions.length;
+    let score = 0;
+    let catStats = {};
+    
+    for (let i = 0; i < total; i++) {
+      let q = state.questions[i];
+      if (!catStats[q.cat]) catStats[q.cat] = { total: 0, correct: 0 };
+      catStats[q.cat].total++;
+      if (state.answers[i] === q.correctAnswer) { score++; catStats[q.cat].correct++; }
+    }
+    
+    let pct = Math.round((score / total) * 100);
+    
+    // สร้าง HTML ระบบวิเคราะห์รายสาระวิชา
+    let analysisHTML = '';
+    for (let cat in catStats) {
+      let cPct = Math.round((catStats[cat].correct / catStats[cat].total) * 100);
+      let isWeak = cPct < 60;
+      let tagClass = isWeak ? 'weak' : 'good';
+      let tagText = isWeak ? '⚠️ ควรปรับปรุงด่วน' : '✅ ผ่านเกณฑ์ประเมิน';
+      let advice = isWeak ? 'มักสับสนจุดพิจารณาเงื่อนไขโจทย์ หรือสูตรคำนวณพื้นฐาน แนะนำทบทวนโจทย์ฝึกปฏิบัติเพิ่มขึ้น' : 'มีความเข้าใจหลักการเชิงคณิตศาสตร์และนำไปประยุกต์ใช้งานได้ยอดเยี่ยม';
+      
+      analysisHTML += `
+        <div class="analysis-item ${isWeak ? 'weak' : 'good'}">
+          <span class="analysis-tag ${tagClass}">${tagText}</span>
+          <div style="font-weight: 700; font-size: 15px; margin-bottom: 2px;">${cat}</div>
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">ทำได้ถูกต้อง ${catStats[cat].correct} จาก ${catStats[cat].total} ข้อ (${cPct}%)</div>
+          <div style="font-size: 13px; line-height:1.4;">💡 <strong>คำแนะนำ:</strong> ${advice}</div>
+        </div>
+      `;
+    }
+
+    let reviewHTML = '<div class="card" style="margin-top:20px"><div style="font-weight:700; margin-bottom:12px;">📋 เฉลยข้อสอบรายข้อและบันทึกข้อผิดพลาด</div>';
+    for (let i = 0; i < total; i++) {
+      let q = state.questions[i];
+      let isCorr = (state.answers[i] === q.correctAnswer);
+      reviewHTML += `
+        <div class="review-item">
+          <div class="r-q"><span class="ri-tick ${isCorr?'ok':'no'}">${isCorr?'✓':'✗'}</span> ข้อ ${i+1}: ${q.q}</div>
+          <div class="r-a" style="color:var(--text-muted)">คำตอบของคุณ: ${state.answers[i] !== null ? q.choices[state.answers[i]] : 'ไม่ระบุ'}</div>
+          <div class="r-a" style="color:var(--green); font-weight:600;">คำตอบที่ถูกต้อง: ${q.choices[q.correctAnswer]}</div>
+        </div>
+      `;
+    }
+    reviewHTML += '</div>';
+
+    app.innerHTML = `
+      <div class="card" style="text-align:center; padding:32px 20px;">
+        <h3 style="color:var(--primary-dark); margin-bottom:6px;">รายงานสมรรถนะผู้เรียนรายบุคคล</h3>
+        <div style="font-size:18px; font-weight:700;">คุณ ${state.studentName}</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">ระดับ: ${state.studentId}</div>
+        
+        <div style="font-size:56px; font-weight:800; color:var(--primary-dark); line-height:1;">${score}</div>
+        <div style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">คะแนนรวม (เต็ม ${total} คะแนน)</div>
+        
+        <div class="grid-stats">
+          <div class="stat-box"><div class="stat-num green">${score}</div><div style="font-size:12px;color:var(--text-muted)">ตอบถูก</div></div>
+          <div class="stat-box"><div class="stat-num red">${total - score}</div><div style="font-size:12px;color:var(--text-muted)">ตอบผิด</div></div>
+          <div class="stat-box"><div class="stat-num blue">${pct}%</div><div style="font-size:12px;color:var(--text-muted)">ความแม่นยำ</div></div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <div class="analysis-header">📊 ผลการวิเคราะห์แยกตามสาระการเรียนรู้</div>
+        ${analysisHTML}
+      </div>
+      
+      <button class="btn btn-primary" onclick="location.reload()">🔄 สุ่มทำชุดข้อสอบใหม่อีกครั้ง</button>
+      ${reviewHTML}
+    `;
+  }
+}
+
+function selectAnswer(index) { if (state.checked[state.current]) return; state.answers[state.current] = index; renderApp(); }
+function checkAnswer() { if (state.answers[state.current] === null) return; state.checked[state.current] = true; renderApp(); }
+function goNext() { if (state.current < state.questions.length - 1) { state.current++; renderApp(); } }
+function goPrev() { if (state.current > 0) { state.current--; renderApp(); } }
+function jumpTo(index) { state.current = index; renderApp(); }
+function showResult() { state.screen = 'result'; renderApp(); }
+
+renderApp();
+</script>
+</body>
+</html>
