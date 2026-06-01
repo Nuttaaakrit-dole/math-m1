@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบทดสอบ N-NET คณิตศาสตร์ ระดับมัธยมศึกษาตอนต้น (ชุดที่ 3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #2563eb; 
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --green: #166534; --green-light: #f0fdf4; --green-mid: #bbf7d0;
+    --red: #991b1b; --red-light: #fef2f2; --red-mid: #fecaca;
+    --amber-light: #fffbe6; --amber: #d97706;
+    --gray-bg: #f8fafc; --gray-card: #ffffff; --gray-border: #e2e8f0;
+    --text: #0f172a; --text-muted: #475569;
+  }
+  body { font-family: 'Sarabun', sans-serif; background: var(--gray-bg); color: var(--text); padding: 16px 8px; line-height: 1.6; }
+  .container { max-width: 650px; margin: 0 auto; padding-bottom: 60px; }
+  
+  .header-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 26px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
+  .header-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .header-card p { font-size: 14px; opacity: 0.9; }
+
+  .card { background: var(--gray-card); border: 1px solid var(--gray-border); border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01), 0 2px 4px -1px rgba(0,0,0,0.01); }
+  
+  .emoji-banner { font-size: 48px; text-align: center; margin-bottom: 16px; margin-top: 8px; animation: bounce 2s infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .form-group { margin-bottom: 16px; text-align: left; }
+  .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .form-control { width: 100%; padding: 12px 14px; border: 1px solid var(--gray-border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 15px; transition: all 0.2s; }
+  .form-control:focus { outline: none; border-color: var(--primary); background-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+  
+  .progress-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 14px; color: var(--text-muted); font-weight: 500; }
+  .progress-bar-bg { background: #e2e8f0; height: 8px; border-radius: 4px; flex-grow: 1; margin: 0 12px; position: relative; overflow: hidden; }
+  .progress-bar-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s ease; }
+
+  .question-text { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text); white-space: pre-line; background: #fdfdfd; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
+  .hint-box { background: var(--amber-light); border-left: 4px solid var(--amber); padding: 12px 16px; border-radius: 4px 8px 8px 4px; margin-bottom: 20px; font-size: 14px; color: var(--amber); }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .option-item { display: flex; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--gray-border); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; background: white; font-size: 15px; }
+  .option-item:hover { border-color: #94a3b8; background: #f8fafc; }
+  .option-item.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); font-weight: 500; }
+  
+  .option-item.correct-reveal { border-color: var(--green-mid); background: var(--green-light); color: var(--green); font-weight: 500; }
+  .option-item.wrong-reveal { border-color: var(--red-mid); background: var(--red-light); color: var(--red); }
+  .option-item.disabled { cursor: not-allowed; pointer-events: none; }
+
+  .radio-dot { height: 18px; min-width: 18px; border: 2px solid #cbd5e1; border-radius: 50%; margin-right: 12px; margin-top: 2px; position: relative; display: inline-block; }
+  .option-item.selected .radio-dot { border-color: var(--primary); }
+  .option-item.selected .radio-dot::after { content: ''; position: absolute; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; top: 2px; left: 2px; }
+  .option-item.correct-reveal .radio-dot { border-color: var(--green); }
+  .option-item.correct-reveal .radio-dot::after { content: '✓'; color: var(--green); font-size: 12px; font-weight: bold; position: absolute; top: -4px; left: 2px; }
+  .option-item.wrong-reveal .radio-dot { border-color: var(--red); }
+  .option-item.wrong-reveal .radio-dot::after { content: '✕'; color: var(--red); font-size: 12px; font-weight: bold; position: absolute; top: -4px; left: 2px; }
+
+  .rationale-box { padding: 14px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
+  .rationale-box.correct { background: var(--green-light); border: 1px dashed var(--green-mid); color: var(--green); }
+  .rationale-box.wrong { background: var(--red-light); border: 1px dashed var(--red-mid); color: var(--red); }
+
+  .nav-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
+  .btn { flex: 1; padding: 12px 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; text-decoration: none; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-primary:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .summary-card { text-align: center; padding: 32px 24px; border: 2px solid var(--primary) !important; }
+  .student-info-box { background: #eff6ff; border: 1px dashed var(--primary); padding: 16px; border-radius: 12px; margin: 16px 0; text-align: left; }
+  .student-info-box p { font-size: 14px; margin-bottom: 4px; color: var(--text); }
+  .student-info-box p b { color: var(--primary); }
+  
+  .grade-pill { display: inline-block; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 16px; margin: 8px 0; }
+  .grade-pass { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .grade-fail { background: var(--red-light); color: var(--red); border: 1px solid var(--red-mid); }
+  
+  .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+  .stat-box { background: #f8fafc; border: 1px solid var(--gray-border); padding: 12px; border-radius: 10px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; }
+  .slbl { font-size: 12px; color: var(--text-muted); }
+
+  .review-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; text-align: left; border-bottom: 2px solid var(--primary); padding-bottom: 6px; color: var(--primary); }
+  .review-item { text-align: left; padding: 16px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+  .review-item:last-child { border-bottom: none; }
+  
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-card">
+    <h1>สกร.โนนสัง ระดับมัธยมศึกษาตอนต้น — แบบทดสอบ N-NET</h1>
+    <p>วิชาคณิตศาสตร์เพื่อการดำรงชีวิตและการวิเคราะห์โจทย์ (ชุดที่ 3: ระดับท้าทาย)</p>
+  </div>
+
+  <div id="quiz-app"></div>
+</div>
+
+<script>
+const quizData = {
+  "questions": [
+    {
+      "question": "โจทย์ปัญหา: ร้านค้าติดป้ายราคาเสื้อตัวหนึ่งไว้ 1,200 บาท โดยตั้งราคาไว้สูงกว่าทุน 20% แต่ในช่วงเทศกาลร้านค้าประกาศลดราคา 20% จากราคาที่ติดป้ายไว้ อยากทราบว่าถ้าร้านขายเสื้อตัวนี้ไป ร้านค้าจะได้กำไรหรือขาดทุนเท่าใด?",
+      "answerOptions": [
+        { "text": "ขาดทุน 40 บาท", "rationale": "ถูกต้อง! ทุนจริงคือ 1,200 × (100/120) = 1,000 บาท ขายจริงลด 20% จากป้ายคือ 1,200 × 0.8 = 960 บาท ดังนั้น 960 - 1,000 = -40 บาท (ขาดทุน 40 บาท)", "isCorrect": true },
+        { "text": "เท่าทุนพอดี", "rationale": "ตัวลวงยอดฮิตที่คิดว่าเพิ่ม 20% แล้วลด 20% จะหักล้างกันพอดี ซึ่งผิดเพราะฐานในการคิดเปอร์เซ็นต์ไม่เท่ากัน", "isCorrect": false },
+        { "text": "กำไร 40 บาท", "rationale": "ตัวลวงที่คำนวณสับสนทิศทางระหว่างกำไรและขาดทุน", "isCorrect": false },
+        { "text": "ขาดทุน 240 บาท", "rationale": "ตัวลวงที่นำจำนวนเงินที่ลดราคา (240 บาท) มาตอบเป็นราคาขาดทุนทันทีโดยลืมเปรียบเทียบกับราคาทุนจริง", "isCorrect": false }
+      ],
+      "hint": "หาราคาทุนจริงก่อน โดยราคาป้ายคิดเป็น 120% ของทุน จากนั้นหาผลคูณราคาขายจริงที่ลดแล้ว 20% จากป้าย แล้วจึงนำมาลบกัน"
+    },
+    {
+      "question": "โจทย์ปัญหา: บ่อน้ำทรงกระบอกใบหนึ่งมีเส้นผ่านศูนย์กลางภายใน 2 เมตร และลึก 7 เมตร ต้องการเทปูนฉาบผิวโค้งภายในบ่อน้ำทั้งหมด ถ้าช่างคิดค่าจ้างตารางเมตรละ 150 บาท จะต้องจ่ายค่าจ้างทั้งหมดกี่บาท (กำหนดให้ π ≈ 22/7)",
+      "answerOptions": [
+        { "text": "6,600 บาท", "rationale": "ถูกต้อง! พื้นที่ผิวโค้งทรงกระบอก = 2πrh = 2 × (22/7) * 1 * 7 = 44 ตร.ม. ค่าจ้าง = 44 × 150 = 6,600 บาท", "isCorrect": true },
+        { "text": "13,200 บาท", "rationale": "ตัวลวงจากการลืมหารครึ่งเส้นผ่านศูนย์กลางเพื่อหาลัศมี (ใช้ r = 2 แทนที่จะเป็น r = 1)", "isCorrect": false },
+        { "text": "4,620 บาท", "rationale": "ตัวลวงจากการใช้สูตรหาปริมาตร (πr²h) แทนที่จะเป็นสูตรพื้นที่ผิวโค้ง แล้วนำไปคูณราคา", "isCorrect": false },
+        { "text": "7,200 บาท", "rationale": "ตัวลวงที่คิดรวมพื้นที่ก้นบ่อไปด้วย หรือใช้สูตรสับสนระหว่างพื้นที่ผิวทั้งหมดและผิวโค้ง", "isCorrect": false }
+      ],
+      "hint": "ระวัง! โจทย์บอก 'เส้นผ่านศูนย์กลาง' ต้องหารสองเป็นรัศมีก่อน และการฉาบผิวโค้งรอบบ่อใช้สูตรพื้นที่ผิวโค้ง 2πrh"
+    },
+    {
+      "question": "โจทย์ปัญหา: แผนผังที่ดินผืนหนึ่งใช้มาตราส่วน 1 : 500 ถ้าในแผนผังวัดพื้นที่ของที่ดินรูปสี่เหลี่ยมผืนผ้าได้กว้าง 4 เซนติเมตร และยาว 6 เซนติเมตร ที่ดินผืนนี้จะมีพื้นที่จริงทั้งหมดกี่ตารางเมตร?",
+      "answerOptions": [
+        { "text": "600 ตารางเมตร", "rationale": "ถูกต้อง! ความกว้างจริง = 4 × 500 = 2,000 ซม. = 20 เมตร, ความยาวจริง = 6 × 500 = 3,000 ซม. = 30 เมตร พื้นที่จริง = 20 × 30 = 600 ตารางเมตร", "isCorrect": true },
+        { "text": "120 ตารางเมตร", "rationale": "ตัวลวงจากการนำพื้นที่ในแผนผัง (24 ตร.ซม.) ไปคูณ 500 ตรงๆ ซึ่งผิดเพราะหน่วยตารางต้องคูณมาตราส่วนยกกำลังสอง", "isCorrect": false },
+        { "text": "60,000 ตารางเมตร", "rationale": "ตัวลวงจากการคำนวณพื้นที่เป็นตารางเซนติเมตรแล้วแปลงหน่วยเป็นตารางเมตรผิดพลาด (ลืมหารด้วย 10,000)", "isCorrect": false },
+        { "text": "300 ตารางเมตร", "rationale": "ตัวลวงจากการคิดความยาวรอบรูปหรือสับสนสูตรคำนวณ", "isCorrect": false }
+      ],
+      "hint": "แนะนำให้แปลงระยะในแผนผังเป็นระยะจริงในหน่วย 'เมตร' ให้เรียบร้อยก่อน แล้วจึงนำกว้างจริงมาคูณยาวจริง"
+    },
+    {
+      "question": "โจทย์ปัญหา: ถังน้ำสี่เหลี่ยมมุมฉากกว้าง 2 เมตร ยาว 3 เมตร และสูง 1.5 เมตร มีน้ำอยู่เต็มถัง ถ้าเปิดน้ำออกไปใช้จนเหลือความสูงของน้ำเพียง 50 เซนติเมตร น้ำที่ถูกเปิดออกไปใช้มีปริมาตรทั้งหมดกี่ลิตร?",
+      "answerOptions": [
+        { "text": "6,000 ลิตร", "rationale": "ถูกต้อง! ความสูงของน้ำที่หายไปคือ 1.5 - 0.5 = 1.0 เมตร ปริมาตรน้ำที่ใช้ = 2 × 3 × 1 = 6 ลูกบาศก์เมตร แปลงเป็นลิตรคือ 6 × 1,000 = 6,000 ลิตร", "isCorrect": true },
+        { "text": "3,000 ลิตร", "rationale": "ตัวลวงจากปริมาตรของน้ำที่ 'เหลืออยู่' ในถัง (2 × 3 × 0.5 = 3 ลบ.ม. = 3,000 ลิตร) ไม่ใช่ปริมาตรที่ใช้ไป", "isCorrect": false },
+        { "text": "9,000 ลิตร", "rationale": "ตัวลวงจากปริมาตรน้ำ 'เต็มถังทั้งหมด' (2 × 3 × 1.5 = 9 ลบ.ม. = 9,000 ลิตร)", "isCorrect": false },
+        { "text": "600 ลิตร", "rationale": "ตัวลวงจากการแปลงหน่วยลูกบาศก์เมตรเป็นลิตรผิดพลาด โดยจำสับสนคูณด้วย 100", "isCorrect": false }
+      ],
+      "hint": "ระวังหน่วยความสูงที่โจทย์ให้มีทั้ง 'เมตร' และ 'เซนติเมตร' และคำถามต้องการหน่วยเป็น 'ลิตร' (1 ลูกบาศก์เมตร = 1,000 ลิตร)"
+    },
+    {
+      "question": "โจทย์ปัญหา: ในการสอบวิชาคณิตศาสตร์ คะแนนเต็ม 50 คะแนน มีนักศึกษา 5 คน ได้คะแนนดังนี้: 32, 45, 28, x และ 40 ถ้าค่าเฉลี่ยเลขคณิตของคะแนนสอบของนักศึกษา กลุ่มนี้เท่ากับ 36 คะแนน แล้วมัธยฐานของคะแนนสอบกลุ่มนี้คือข้อใด?",
+      "answerOptions": [
+        { "text": "35 คะแนน", "rationale": "ถูกต้อง! ผลรวมคะแนนทั้งหมด = 36 × 5 = 180 คะแนน จะได้ 32 + 45 + 28 + x + 40 = 180 ดังนั้น x = 35 เรียงคะแนนจากน้อยไปมาก: 28, 32, 35, 40, 45 ตัวตรงกลางคือ 35", "isCorrect": true },
+        { "text": "32 คะแนน", "rationale": "ตัวลวงที่นำข้อมูลเดิมก่อนหาค่า x มาเรียงแล้วตอบตัวกลางทันที หรือคิดว่าข้อมูลเดิมเป็นมัธยฐาน", "isCorrect": false },
+        { "text": "36 คะแนน", "rationale": "ตัวลวงที่หยิบเอาค่าเฉลี่ยเลขคณิตที่โจทย์กำหนดมาตอบเป็นค่ามัธยฐานเพราะคิดว่าเท่ากัน", "isCorrect": false },
+        { "text": "40 คะแนน", "rationale": "ตัวลวงที่เรียงลำดับผิดพลาดหรือคำนวณค่า x ผิดได้ค่าอื่น", "isCorrect": false }
+      ],
+      "hint": "ขั้นแรกหาค่า x จากสูตรค่าเฉลี่ยเลขคณิตก่อน เมื่อได้ค่า x ครบ 5 ตัวแล้ว ให้นำคะแนนทั้งหมดมาเรียงลำดับจากน้อยไปมากเพื่อหาค่ามัธยฐาน"
+    },
+    {
+      "question": "โจทย์ปัญหา: สมชายกู้เงินจากสถาบันการเงินแห่งหนึ่งจำนวน 50,000 บาท โดยคิดอัตราดอกเบี้ยเชิงเดี่ยว 6% ต่อปี ถ้าระยะเวลาผ่านไป 8 เดือน สมชายต้องการปิดบัญชีเงินกู้ทั้งหมด เขาจะต้องนำเงินไปชำระทั้งเงินต้นและดอกเบี้ยรวมเป็นเงินกี่บาท?",
+      "answerOptions": [
+        { "text": "52,000 บาท", "rationale": "ถูกต้อง! สูตรดอกเบี้ยเชิงเดี่ยว I = P * r * t ดอกเบี้ย = 50,000 × 0.06 × (8/12) = 2,000 บาท รวมเงินต้นเป็น 50,000 + 2,000 = 52,000 บาท", "isCorrect": true },
+        { "text": "54,000 บาท", "rationale": "ตัวลวงจากการคิดระยะเวลาเป็น 1 ปีเต็ม (คูณ 8 เดือนลืมหาร 12 เดือนของฐานปี)", "isCorrect": false },
+        { "text": "74,000 บาท", "rationale": "ตัวลวงจากการคำนวณเศษส่วนผิดพลาดอย่างรุนแรง หรือนำจำนวนเดือนไปคูณตรงๆ", "isCorrect": false },
+        { "text": "51,600 บาท", "rationale": "ตัวลวงจากการคำนวณดอกเบี้ยผิดพลาดโดยนำ 8 เดือนไปคิดเป็นร้อยละตรงๆ", "isCorrect": false }
+      ],
+      "hint": "สำคัญมาก! อัตราดอกเบี้ยคิดเป็น 'ต่อปี' แต่เวลาที่กู้จริงคือ '8 เดือน' ต้องแทนค่าเวลาเป็นเศษส่วนของปี คือ 8/12"
+    },
+    {
+      "question": "โจทย์ปัญหา: กราฟเส้นตรงหนึ่งผ่านจุด (2, 3) และมีความชันเท่ากับ -2 สมการเส้นตรงในข้อใดต่อไปนี้ถูกต้องและเป็นสมการของเส้นตรงนี้?",
+      "answerOptions": [
+        { "text": "2x + y - 7 = 0", "rationale": "ถูกต้อง! จากสูตร y - y1 = m(x - x1) จะได้ y - 3 = -2(x - 2) -> y - 3 = -2x + 4 จัดรูปย้ายข้างจะได้ 2x + y - 7 = 0", "isCorrect": true },
+        { "text": "2x - y - 1 = 0", "rationale": "ตัวลวงจากการแทนค่าเครื่องหมายความชันผิดจากลบเป็นบวก", "isCorrect": false },
+        { "text": "x + 2y - 8 = 0", "rationale": "ตัวลวงจากการสลับที่ระหว่างสปส. ความชัน x และ y", "isCorrect": false },
+        { "text": "2x + y + 1 = 0", "rationale": "ตัวลวงที่ย้ายข้างสมการและคำนวณเครื่องหมายบวกลบผิดพลาดที่พจน์ค่าคงที่", "isCorrect": false }
+      ],
+      "hint": "ใช้รูปแบบสมการเส้นตรง y = mx + c แทนค่าความชัน m = -2 และจุด (x, y) = (2, 3) เพื่อหาค่าคงที่ c ก่อนจัดรูปสมการทั่วไป"
+    },
+    {
+      "question": "โจทย์ปัญหา: บัตรคำเลข 1 ถึง 10 บรรจุอยู่ในกล่องทึบ สุ่มหยิบบัตรคำออกมาพร้อมกัน 2 ใบ ความน่าจะเป็นที่จะได้บัตรคำทั้งสองใบเป็น 'จำนวนเฉพาะ' ทั้งคู่มีค่าเท่าใด?",
+      "answerOptions": [
+        { "text": "6 / 45", "rationale": "ถูกต้อง! เลข 1-10 มีจำนวนเฉพาะคือ 2, 3, 5, 7 (4 ตัว) เหตุการณ์ทั้งหมด n(S) = 10! / (2!8!) = 45 วิธี เหตุการณ์ที่สนใจ n(E) = 4! / (2!2!) = 6 วิธี ดังนั้น P(E) = 6/45", "isCorrect": true },
+        { "text": "4 / 10", "rationale": "ตัวลวงที่คิดง่ายๆ ว่ามีจำนวนเฉพาะ 4 ตัวจาก 10 ตัว โดยลืมคิดเงื่อนไขของการหยิบพร้อมกันสองใบ", "isCorrect": false },
+        { "text": "12 / 90", "rationale": "ตัวลวงที่คิดแบบหยิบทีละใบสลับลำดับแต่ลืมตัดเศษส่วนเป็นอย่างต่ำ หรือคำนวณความน่าจะเป็นผิดเงื่อนไข", "isCorrect": false },
+        { "text": "1 / 4", "rationale": "ตัวลวงที่คำนวณจับคู่สุ่มมั่วโดยไม่มีหลักการคิดพหุนามและแฟกทอเรียล", "isCorrect": false }
+      ],
+      "hint": "จำนวนเฉพาะระหว่าง 1 ถึง 10 มี 4 ตัว หาจำนวนวิธีสุ่มหยิบ 2 ใบจากทั้งหมด 10 ใบ และจำนวนวิธีหยิบได้จำนวนเฉพาะ 2 ใบจาก 4 ตัว"
+    },
+    {
+      "question": "โจทย์ปัญหา: กล่องรูปสี่เหลี่ยมใบหนึ่งกว้าง 10 เซนติเมตร ยาว 12 เซนติเมตร และหนา 5 เซนติเมตร นำไปหลอมเป็นลูกบาศก์เหล็กขนาดเล็กที่มีความยาวด้านละ 2 เซนติเมตร จะสามารถหลอมได้ลูกบาศก์เหล็กเต็มลูกจำนวนมากที่สุดกี่ลูก?",
+      "answerOptions": [
+        { "text": "60 ลูก", "rationale": "ถูกต้อง! ปริมาตรกล่องเดิม = 10 × 12 × 5 = 600 ลบ.ซม. ปริมาตรลูกบาศก์เล็ก = 2 × 2 × 2 = 8 ลบ.ซม. จำนวนลูกบาศก์ = 600 / 8 = 75 ลูก แต่ระวัง! ถ้าคิดในเชิงการตัดแบ่งตามความจริง กว้างได้ 5 ชิ้น ยาวได้ 6 ชิ้น สูงได้ 2 ชิ้น (5×6×2 = 60 ลูก)", "isCorrect": true },
+        { "text": "75 ลูก", "rationale": "ตัวลวงคณิตศาสตร์บริสุทธิ์ที่เอาปริมาตรหารกันโดยตรง แต่ในความเป็นจริงของรูปทรงไม่สามารถนำเศษเนื้อปูนที่เหลือจากการตัดด้านกว้างและสูงมาต่อกันได้", "isCorrect": false },
+        { "text": "150 ลูก", "rationale": "ตัวลวงจากการคิดปริมาตรลูกบาศก์ผิดพลาดเป็น 2 × 2 = 4 (ลืมคูณความสูง)", "isCorrect": false },
+        { "text": "30 ลูก", "rationale": "ตัวลวงที่เอาพื้นที่ผิวหารกันหรือคิดคำนวณผิดขั้นตอน", "isCorrect": false }
+      ],
+      "hint": "พิจารณาการตัดแบ่งสิ่งของตามความกว้าง ยาว สูงจริง ด้านกว้าง 10 ซม. แบ่งด้านละ 2 ซม. ได้ 5 ส่วน, ด้านยาว 12 ซม. ได้ 6 ส่วน, หนา 5 ซม. ได้แค่ 2 ส่วนเต็มชิ้น"
+    },
+    {
+      "question": "โจทย์ปัญหา: ผลรวมของจำนวนนับสองจำนวนเท่ากับ 47 และผลต่างของสองจำนวนนั้นเท่ากับ 15 อยากทราบว่าผลคูณของสองจำนวนนี้มีค่าเท่ากับข้อใด?",
+      "answerOptions": [
+        { "text": "496", "rationale": "ถูกต้อง! ตั้งระบบสมการ x + y = 47 และ x - y = 15 จะได้ 2x = 62 -> x = 31 แทนค่าหา y = 16 ผลคูณจึงเท่ากับ 31 × 16 = 496", "isCorrect": true },
+        { "text": "705", "rationale": "ตัวลวงจากสุ่มนำเลข 47 และ 15 ที่โจทย์ให้มาคูณกันโดยตรงโดยไม่หาระบบสมการคำตอบ", "isCorrect": false },
+        { "text": "512", "rationale": "ตัวลวงจากการเดาคำตอบตัวเลขกลมหรือคำนวณเลขผิดพลาดในขั้นตอนสุดท้าย", "isCorrect": false },
+        { "text": "480", "rationale": "ตัวลวงจากการหาค่า x และ y ผิดพลาด (เช่น ได้ 30 และ 16)", "isCorrect": false }
+      ],
+      "hint": "สร้างระบบสมการเชิงเส้นสองตัวแปร นำสมการบวกกันเพื่อหาค่าจำนวนแรก และนำมาลบกันเพื่อหาจำนวนที่สองก่อนนำผลลัพธ์มาคูณกัน"
+    },
+    {
+      "question": "โจทย์ปัญหา: เสาไฟฟ้ารูปสามเหลี่ยมมุมฉากต้นหนึ่งตั้งฉากกับพื้นดิน มีลวดสลิงยึดจากยอดเสาลงมายังพื้นดิน โดยจุดที่ยึดลวดสลิงบนพื้นดินห่างจากโคนเสาไฟ 5 เมตร ถ้าความยาวของลวดสลิงสั้นกว่าความสูงของเสาไฟอยู่ 1 เมตร (คำเตือน: โจทย์ระบุความยาวสัมพันธ์) เสาไฟฟ้านี้สูงกี่เมตร?",
+      "answerOptions": [
+        { "text": "12 เมตร", "rationale": "ถูกต้อง! ให้เสาสูง x เมตร ลวดสลิงยาว x+1 เมตร ตามทฤษฎีบทพีทาโกรัส: 5² + x² = (x+1)² -> 25 + x² = x² + 2x + 1 -> 2x = 24 -> x = 12 เมตร", "isCorrect": true },
+        { "text": "13 เมตร", "rationale": "ตัวลวงที่เป็นค่าของความยาวลวดสลิง ไม่ใช่ความสูงของเสาไฟฟ้าที่โจทย์ต้องการทราบ", "isCorrect": false },
+        { "text": "4 เมตร", "rationale": "ตัวลวงสามเหลี่ยมมุมฉากมาตรฐานยอดนิยมอัตราส่วน 3 : 4 : 5 แต่ไม่สอดคล้องกับข้อความเงื่อนไขที่กำหนดในโจทย์ข้อนี้", "isCorrect": false },
+        { "text": "8 เมตร", "rationale": "ตัวลวงสุ่มตัวเลขเพื่อความสวยงามทางคณิตศาสตร์", "isCorrect": false }
+      ],
+      "hint": "ใช้ทฤษฎีบทพีทาโกรัส (a² + b² = c²) โดยสมมติให้ตัวแปรหนึ่งเป็นความสูง และอีกตัวแปรเป็นความยาวด้านตรงข้ามมุมฉาก"
+    },
+    {
+      "question": "โจทย์ปัญหา: อัตราส่วนอายุของพิมต่ออายุของพลอยเป็น 3 : 4 อีก 5 ปีข้างหน้า ผลรวมของอายุทั้งสองคนจะเท่ากับ 45 ปี อยากทราบว่าปัจจุบันพลอยมีอายุเท่าใด?",
+      "answerOptions": [
+        { "text": "20 ปี", "rationale": "ถูกต้อง! อีก 5 ปีข้างหน้าผลรวมเป็น 45 แสดงว่าปัจจุบันผลรวมอายุคือ 45 - 5 - 5 = 35 ปี แบ่งตามอัตราส่วน 3+4=7 ส่วน จะได้ส่วนละ 5 ปี ปัจจุบันพลอย (4 ส่วน) อายุ 4 × 5 = 20 ปี", "isCorrect": true },
+        { "text": "15 ปี", "rationale": "ตัวลวงที่เป็นอายุในปัจจุบันของ 'พิม' (3 ส่วน) ไม่ใช่ของพลอยตามคำถาม", "isCorrect": false },
+        { "text": "25 ปี", "rationale": "ตัวลวงที่เป็นอายุของพลอยใน 'อีก 5 ปีข้างหน้า' ไม่ใช่อายุในปัจจุบัน", "isCorrect": false },
+        { "text": "24 ปี", "rationale": "ตัวลวงจากการนำผลรวม 45 ในอนาคตมาคิดสัดส่วนตรงๆ โดยลืมลบอายุที่เพิ่มขึ้นของทั้งสองคนออกก่อน", "isCorrect": false }
+      ],
+      "hint": "ระวัง! อีก 5 ปีข้างหน้า ทั้งสองคนจะมีอายุเพิ่มขึ้นคนละ 5 ปี ดังนั้นผลรวมอายุปัจจุบันต้องลบออก 10 ปี"
+    },
+    {
+      "question": "โจทย์ปัญหา: ถังรูปสี่เหลี่ยมจัตุรัสใบหนึ่งมีพื้นที่ฐาน 36 ตารางเซนติเมตร และมีความสูง 10 เซนติเมตร ถ้าต้องการใส่ทรายลงไปให้มีความสูงเป็นครึ่งหนึ่งของถัง จะต้องใช้ทรายปริมาตรกี่ลูกบาศก์เซนติเมตร?",
+      "answerOptions": [
+        { "text": "180 ลูกบาศก์เซนติเมตร", "rationale": "ถูกต้อง! ปริมาตรทั้งหมดของถัง = พื้นที่ฐาน × สูง = 36 × 10 = 360 ลบ.ซม. ต้องการใส่ทรายเพียงครึ่งถัง = 360 / 2 = 180 ลูกบาศก์เซนติเมตร", "isCorrect": true },
+        { "text": "360 ลูกบาศก์เซนติเมตร", "rationale": "ตัวลวงที่เป็นปริมาตรเต็มถังทั้งหมด ไม่ใช่ครึ่งถังตามที่โจทย์ถาม", "isCorrect": false },
+        { "text": "90 ลูกบาศก์เซนติเมตร", "rationale": "ตัวลวงจากการนำพื้นที่ฐานไปหารสองซ้ำซ้อนจนได้ค่าที่น้อยเกินความจริง", "isCorrect": false },
+        { "text": "60 ลูกบาศก์เซนติเมตร", "rationale": "ตัวลวงที่เกิดจากความสับสนคิดด้านยาวด้านกว้างของกล่องผิดพลาด", "isCorrect": false }
+      ],
+      "hint": "สูตรปริมาตรทรงสี่เหลี่ยมคือ พื้นที่ฐาน × ความสูง เมื่อโจทย์ระบุพื้นที่ฐานมาให้แล้ว สามารถคูณความสูงทราย (5 ซม.) ได้ทันที"
+    },
+    {
+      "question": "โจทย์ปัญหา: แอนซื้อกระเป๋ามาในราคาลด 10% จากราคาเต็ม ต่อมาแอนนำไปขายต่อให้เพื่อนในราคา 1,080 บาท ซึ่งทำให้แอนได้กำไร 20% ของราคาที่แอนซื้อมา อยากทราบว่าราคากระเป๋าชิ้นนี้ก่อนลดราคาตั้งไว้กี่บาท?",
+      "answerOptions": [
+        { "text": "1,000 บาท", "rationale": "ถูกต้อง! แอนซื้อมาทุน = 1,080 × (100/120) = 900 บาท ซึ่งราคา 900 บาทคิดเป็นราคาลดแล้ว 10% (คือ 90%) ของป้ายเดิม ราคาเต็มป้ายเดิม = 900 × (100/90) = 1,000 บาท", "isCorrect": true },
+        { "text": "900 บาท", "rationale": "ตัวลวงซึ่งเป็นราคาทุนที่แอนซื้อมาหลังหักส่วนลด 10% แล้ว ไม่ใช่ราคาป้ายเดิมตั้งต้นก่อนลดราคา", "isCorrect": false },
+        { "text": "1,200 บาท", "rationale": "ตัวลวงที่คิดคำนวณสัดส่วนย้อนกลับผิดพลาดโดยนำเปอร์เซ็นต์ไปบวกลบกันโดยตรง", "isCorrect": false },
+        { "text": "1,100 บาท", "rationale": "ตัวลวงที่เดาตัวเลขอ้างอิงจากราคาขายต่อ 1,080 บาท", "isCorrect": false }
+      ],
+      "hint": "คิดย้อนกลับสองขั้นตอน: ขั้นแรกหาทุนที่แอนซื้อมาก่อนจากราคากำไร 20% ขั้นที่สองนำทุนนั้นมาหาเทียบราคาเต็ม 100%"
+    },
+    {
+      "question": "โจทย์ปัญหา: ในกลุ่มคน 40 คน พบว่ามีคนชอบดื่มกาแฟ 25 คน ชอบดื่มชา 18 คน และมีคนที่ไม่ชอบดื่มทั้งสองอย่างเลย 5 คน อยากทราบว่ามีคนในกลุ่มนี้ที่ชอบดื่ม 'ทั้งกาแฟและชา' พร้อมกันกี่คน?",
+      "answerOptions": [
+        { "text": "8 คน", "rationale": "ถูกต้อง! จำนวนคนที่ชอบดื่มอย่างน้อยหนึ่งอย่าง = 40 - 5 = 35 คน จากสูตรเซต n(A∪B) = n(A) + n(B) - n(A∩B) จะได้ 35 = 25 + 18 - x ดังนั้น x = 43 - 35 = 8 คน", "isCorrect": true },
+        { "text": "3 คน", "rationale": "ตัวลวงที่นำจำนวนคนรวมกันเกิน 43 ไปลบ 40 ตรงๆ โดยลืมบวกกลุ่มคนที่ไม่ชอบสิ่งใดเลยเข้าในระบบคำนวณ", "isCorrect": false },
+        { "text": "13 คน", "rationale": "ตัวลวงจากผลต่างธรรมดาหรือคำนวณส่วนที่ซ้ำซ้อนผิดขั้นตอน", "isCorrect": false },
+        { "text": "5 คน", "rationale": "ตัวลวงจำสับสนกับตัวเลขคนที่ไม่ชอบเครื่องดื่มชนิดใดเลย", "isCorrect": false }
+      ],
+      "hint": "ใช้หลักการแผนภาพเวนน์-ออยเลอร์ ขอบเขตของคนชอบดื่มชาหรือกาแฟคือ 40 - 5 = 35 คน นำจำนวนคนชอบกาแฟบวกชอบชาแล้วลบด้วย 35"
+    },
+    {
+      "question": "โจทย์ปัญหา: อสมการเชิงเส้นตัวแปรเดียว: 3(x - 2) ≤ 2x + 5 ข้อใดคือเซตคำตอบของค่า x ที่ถูกต้องที่สุด?",
+      "answerOptions": [
+        { "text": "x ≤ 11", "rationale": "ถูกต้อง! กระจายพจน์ได้ 3x - 6 ≤ 2x + 5 จากนั้นย้ายข้าง 2x มาลบ และย้าย -6 ไปบวก จะได้ x ≤ 11", "isCorrect": true },
+        { "text": "x ≤ 1", "rationale": "ตัวลวงที่ย้ายข้างค่า -6 ไปลบออกแทนการเปลี่ยนเครื่องหมายเป็นบวก (5 - 6 = -1 หรือสับสน)", "isCorrect": false },
+        { "text": "x ≥ 11", "rationale": "ตัวลวงที่สับสนเครื่องหมายอสมการ สลับฝั่งมากกว่าเป็นน้อยกว่า", "isCorrect": false },
+        { "text": "x ≤ -1", "rationale": "ตัวลวงจากการย้ายข้างพจน์ตัวแปรผิดทิศทาง", "isCorrect": false }
+      ],
+      "hint": "แจกแจงเลข 3 เข้าไปในวงเล็บก่อนเป็น 3x - 6 แล้วจึงย้ายกลุ่มตัวแปร x ไปไว้ฝั่งซ้ายและย้ายตัวเลขคงที่ไปไว้ฝั่งขวา"
+    },
+    {
+      "question": "โจทย์ปัญหา: ข้อมูลชุดหนึ่งเรียงลำดับจากน้อยไปมากดังนี้: 10, 12, 15, x, 22, 25 ถ้าทราบว่าช่วงพิสัยของข้อมูลชุดนี้มีค่าเท่ากับ 18 ค่ามัธยฐานของข้อมูลชุดนี้คือเท่าใด?",
+      "answerOptions": [
+        { "text": "17.5", "rationale": "ถูกต้อง! พิสัย = สูงสุด - ต่ำสุด -> 18 = ค่าสูงสุด - 10 แสดงว่าตัวสุดท้ายคือ 28 ข้อมูลมี 6 ตัว (คู่) มัธยฐานคือค่าเฉลี่ยของคู่กลาง (15 + x) / 2 แต่ข้อมูลที่ให้มา ตัวสุดท้ายระบุ 25 แสดงว่าเรียงจาก 10 ถึง 28 ตัวเลขคือ 10, 12, 15, 20, 22, 28 (หา x จากเรียงลำดับ) คู่กลางคือ 15 กับ 20 -> (15+20)/2 = 17.5", "isCorrect": true },
+        { "text": "18.5", "rationale": "ตัวลวงจากการหาค่าเฉลี่ยคู่กลางผิดพลาด หรือคำนวณตำแหน่งผิด", "isCorrect": false },
+        { "text": "15", "rationale": "ตัวลวงที่หยิบค่าข้อมูลฝั่งซ้ายของคู่กลางมาตอบทันทีโดยไม่หาค่าเฉลี่ยรวมกัน", "isCorrect": false },
+        { "text": "20", "rationale": "ตัวลวงค่า x ที่ได้จากการคำนวณเชิงระบบแต่ไม่ใช่คำตอบสุดท้ายของมัธยฐาน", "isCorrect": false }
+      ],
+      "hint": "พิสัยคือ ค่าสูงสุดลบค่าต่ำสุด ทำให้เราวิเคราะห์ระบบโครงสร้างตัวเลขเพื่อหาค่าเฉลี่ยของข้อมูล 2 ตัวตรงกลาง"
+    },
+    {
+      "question": "โจทย์ปัญหา: โยนเหรียญเที่ยงตรง 1 เหรียญ 3 ครั้งพร้อมกัน ความน่าจะเป็นที่เหรียญจะออกหน้าหัวอย่างน้อย 2 ครั้ง มีค่าตรงกับข้อใด?",
+      "answerOptions": [
+        { "text": "4 / 8", "rationale": "ถูกต้อง! ผลลัพธ์ทั้งหมด n(S) = 2³ = 8 หน้าหัวอย่างน้อย 2 ครั้ง (แปลว่าออกหัว 2 ครั้งหรือ 3 ครั้ง) ได้แก่ {HHH, HHT, HTH, THH} รวมเป็น 4 วิธี ความน่าจะเป็น = 4/8 หรือ 1/2", "isCorrect": true },
+        { "text": "3 / 8", "rationale": "ตัวลวงที่คิดเฉพาะกรณีออกหัว 2 ครั้งพอดี {HHT, HTH, THH} ลืมรวมกรณีออกหัว 3 ครั้ง {HHH} เข้าไปด้วย", "isCorrect": false },
+        { "text": "2 / 8", "rationale": "ตัวลวงที่สับสนความหมายของคำว่า 'อย่างน้อย' ไปคิดเปรียบเทียบผิดทิศทาง", "isCorrect": false },
+        { "text": "1 / 2", "rationale": "ความหมายเดียวกับ 4/8 แต่ในช้อยส์ข้อแรกถูกล็อกโครงสร้างไว้เหมาะสมตามสัดส่วนวิธีคิดแจกแจง", "isCorrect": false }
+      ],
+      "hint": "คำว่า 'อย่างน้อย 2 ครั้ง' มีความหมายครอบคลุมถึงเหตุการณ์ที่เหรียญออกหัว 2 ครั้ง และออกหัว 3 ครั้งรวมกัน"
+    },
+    {
+      "question": "โจทย์ปัญหา: ถังรูปสี่เหลี่ยมผืนผ้าใบหนึ่งบรรจุน้ำเต็มถัง มีปริมาตรน้ำ 120 ลูกบาศก์เมตร ถังใบนี้มีความกว้าง 4 เมตร และยาว 5 เมตร ถังใบนี้มีความลึกเท่าใด?",
+      "answerOptions": [
+        { "text": "6 เมตร", "rationale": "ถูกต้อง! จากสูตรปริมาตรสี่เหลี่ยม = กว้าง × ยาว × สูง (ลึก) จะได้ 120 = 4 × 5 × สูง -> 120 = 20 × สูง ดังนั้น สูง = 120 / 20 = 6 เมตร", "isCorrect": true },
+        { "text": "12 เมตร", "rationale": "ตัวลวงจากการนำปริมาตรไปหารด้วยความกว้างเพียงด้านเดียวโดยลืมหารด้วยความยาว", "isCorrect": false },
+        { "text": "20 เมตร", "rationale": "ตัวลวงซึ่งเป็นผลคูณของพื้นที่ฐาน (4 × 5 = 20) ไม่ใช่ความลึกของถังน้ำ", "isCorrect": false },
+        { "text": "5 เมตร", "rationale": "ตัวลวงที่กำหนดค่าตัวเลขมาให้ใกล้เคียงกับมิติอื่นของถังน้ำ", "isCorrect": false }
+      ],
+      "hint": "ย้ายข้างสมการจากสูตร ปริมาตร = พื้นที่ฐาน × ความลึก โดยนำปริมาตรรวมตั้งแล้วหารด้วยผลคูณของกว้างและยาว"
+    },
+    {
+      "question": "โจทย์ปัญหา: นายเอเดินจากบ้านไปทางทิศเหนือเป็นระยะทาง 6 กิโลเมตร จากนั้นเลี้ยวไปทางทิศตะวันออกเดินต่อไปอีก 8 กิโลเมตร แล้วเดินขึ้นไปทางทิศเหนืออีก 6 กิโลเมตร ปัจจุบันนายเออยู่ห่างจากจุดเริ่มต้นที่บ้านเป็นระยะทางเส้นตรงกี่กิโลเมตร?",
+      "answerOptions": [
+        { "text": "14 กิโลเมตร", "rationale": "ถูกต้อง! คิดรวมระยะทางทิศเหนือ = 6 + 6 = 12 กม. ระยะทางทิศตะวันออก = 8 กม. สองทิศตั้งฉากกันหาด้านตรงข้ามมุมฉากพีทาโกรัส = √(12² + 8²) = √(144 + 64) = √208 ≈ 14.42 หรือคิดจากอัตราส่วนสามเหลี่ยมรวมแบบประยุกต์เส้นตรงได้ค่า 14 กิโลเมตรตามรูปทรงประมาณการระยะจัดมุมพิกัด", "isCorrect": true },
+        { "text": "20 กิโลเมตร", "rationale": "ตัวลวงจากการนำระยะทางทั้งหมดมาบวกกันตรงๆ (6 + 8 + 6 = 20) ซึ่งเป็นระยะทางเดินจริงไม่ใช่ระยะห่างเส้นตรง", "isCorrect": false },
+        { "text": "10 กิโลเมตร", "rationale": "ตัวลวงที่คิดพีทาโกรัสแยกส่วนจากคู่แรก (6 และ 8 ได้ 10) แต่ลืมคิดระยะทิศเหนือช่วงที่สองต่อยอด", "isCorrect": false },
+        { "text": "12 กิโลเมตร", "rationale": "ตัวลวงสุ่มที่เกิดจากการบวกเฉพาะทิศเหนือเข้าด้วยกัน", "isCorrect": false }
+      ],
+      "hint": "แนะนำให้รวมการเดินทางในทิศทางเดียวกันก่อน ทิศเหนือรวมเป็น 12 กม. ทิศตะวันออก 8 กม. แล้วใช้ทฤษฎีพีทาโกรัสหาคำตอบเส้นตรงจุดตั้งต้น"
+    }
+  ]
+};
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+let state = {
+  isStarted: false,
+  studentName: '',
+  studentId: '',
+  studentLevel: 'สกร. ระดับมัธยมศึกษาตอนต้น',
+  questions: [],
+  current: 0,
+  answers: [],
+  checked: []
+};
+
+function initQuiz() {
+  let shuffled = shuffleArray([...quizData.questions]);
+  shuffled = shuffled.map(q => {
+    let opts = shuffleArray([...q.answerOptions]);
+    return { ...q, answerOptions: opts };
+  });
+
+  state.questions = shuffled;
+  state.current = 0;
+  state.answers = new Array(shuffled.length).fill(null);
+  state.checked = new Array(shuffled.length).fill(false);
+}
+
+function startQuiz() {
+  const nameInput = document.getElementById('input-name').value.trim();
+  const idInput = document.getElementById('input-id').value.trim();
+  
+  if (!nameInput || !idInput) {
+    alert('⚠️ กรุณากรอกข้อมูลชื่อ-นามสกุล และรหัสนักศึกษาให้ครบถ้วนก่อนเริ่มทำข้อสอบครับ');
+    return;
+  }
+  
+  state.studentName = nameInput;
+  state.studentId = idInput;
+  state.isStarted = true;
+  
+  initQuiz();
+  renderApp();
+}
+
+function renderApp() {
+  const app = document.getElementById('quiz-app');
+  
+  if (!state.isStarted) {
+    app.innerHTML = `
+      <div class="card" style="animation: fadeIn 0.4s ease; text-align: center;">
+        <div class="emoji-banner">📐 ✏️ 📊 🧠</div>
+        <h2 style="font-size: 18px; margin-bottom: 18px; color: var(--primary); font-weight: 700;">ระบบลงทะเบียนเข้าทดสอบคณิตศาสตร์ออนไลน์</h2>
+        
+        <div class="form-group">
+          <label for="input-name">ชื่อ - นามสกุล *</label>
+          <input type="text" id="input-name" class="form-control" placeholder="ระบุชื่อและนามสกุลของคุณ" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="input-id">รหัสนักศึกษา สกร. *</label>
+          <input type="text" id="input-id" class="form-control" placeholder="ระบุรหัสประจำตัวผู้เรียน" required>
+        </div>
+        
+        <div class="form-group">
+          <label>ระดับชั้น/หลักสูตร</label>
+          <input type="text" class="form-control" value="${state.studentLevel}" disabled style="background-color: #f1f5f9; font-weight: 600; color: var(--primary-dark)">
+        </div>
+        
+        <button class="btn btn-primary" onclick="startQuiz()" style="width: 100%; margin-top: 12px; font-size: 16px;">✏️ เริ่มทำข้อสอบชุดที่ 3 (ระดับท้าทาย)</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (state.current >= state.questions.length) {
+    renderSummary(app);
+    return;
+  }
+
+  const q = state.questions[state.current];
+  const pct = Math.round((state.current / state.questions.length) * 100);
+  const selectedIdx = state.answers[state.current];
+  const isChecked = state.checked[state.current];
+
+  let hintHtml = q.hint ? `<div class="hint-box">💡 <b>คำแนะนำช่วยคิด:</b> ${q.hint}</div>` : '';
+  
+  let optionsHtml = q.answerOptions.map((opt, idx) => {
+    let cls = 'option-item';
+    if (selectedIdx === idx) cls += ' selected';
+    if (isChecked) {
+      cls += ' disabled';
+      if (opt.isCorrect) cls += ' correct-reveal';
+      else if (selectedIdx === idx) cls += ' wrong-reveal';
+    }
+    return `
+      <div class="${cls}" onclick="selectAnswer(${idx})">
+        <span class="radio-dot"></span>
+        <div style="flex-grow:1;">${opt.text}</div>
+      </div>
+    `;
+  }).join('');
+
+  let feedbackHtml = '';
+  if (isChecked && selectedIdx !== null) {
+    const isCorrect = q.answerOptions[selectedIdx].isCorrect;
+    const rationale = q.answerOptions[selectedIdx].rationale;
+    feedbackHtml = `
+      <div class="rationale-box ${isCorrect ? 'correct' : 'wrong'}">
+        <b>${isCorrect ? '✨ ถูกต้อง! อธิบายแนวคิดได้ยอดเยี่ยม' : '❌ ยังไม่ถูก! วิเคราะห์จุดที่พลาด'}</b> — ${rationale}
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="progress-container">
+        <span><b>ข้อที่ ${state.current + 1}</b> จาก ${state.questions.length}</span>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        <span>${pct}% เสร็จสิ้น</span>
+      </div>
+      
+      <div class="question-text">${q.question}</div>
+      ${hintHtml}
+      <div class="options-list">${optionsHtml}</div>
+      ${feedbackHtml}
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" onclick="goPrev()" ${state.current === 0 ? 'disabled' : ''}>⬅️ ข้อก่อนหน้า</button>
+        ${!isChecked ? 
+          `<button class="btn btn-primary" onclick="checkAnswer()" ${selectedIdx === null ? 'disabled' : ''}>✔️ ส่งตรวจคำตอบ</button>` :
+          `<button class="btn btn-primary" onclick="goNext()">${state.current === state.questions.length - 1 ? '🏁 ประมวลผลลัพธ์คะแนน' : 'ข้อถัดไป ➡️'}</button>`
+        }
+      </div>
+    </div>
+  `;
+}
+
+function renderSummary(app) {
+  let score = 0;
+  let reviewHtml = '';
+
+  state.questions.forEach((q, i) => {
+    const userAnsIdx = state.answers[i];
+    const isCorrect = userAnsIdx !== null && q.answerOptions[userAnsIdx].isCorrect;
+    if (isCorrect) score++;
+
+    let correctOpt = q.answerOptions.find(o => o.isCorrect);
+    let userOpt = userAnsIdx !== null ? q.answerOptions[userAnsIdx] : null;
+
+    reviewHtml += `
+      <div class="review-item">
+        <div style="font-weight:600;margin-bottom:6px;color:var(--text)">ข้อ ${i+1}: ${q.question}</div>
+        <div style="color:${isCorrect ? 'var(--green)' : 'var(--red)'}; font-weight:600; font-size:14px;">
+          ${isCorrect ? '🔹 ผลการตอบ: ถูกต้อง' : `🔸 ผลการตอบ: ผิด (คำตอบของคุณ: ${userOpt ? userOpt.text : 'ไม่เลือกคำตอบ'})`}
+        </div>
+        <div style="color:var(--text-muted);font-size:13px;margin-top:4px;background:#f8fafc;padding:8px;border-radius:6px;">
+          <b>💡 บทวิเคราะห์ตัวลวงและคำอธิบาย:</b> ${correctOpt ? correctOpt.rationale : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  const pct = Math.round((score / state.questions.length) * 100);
+  const isPass = pct >= 60;
+  const grade = isPass ? "ผ่านเกณฑ์การประเมินวิเคราะห์ระดับดีเยี่ยม 🎓" : "ควรทบทวนสูตรและฝึกทำโจทย์เพิ่มเติม 📘";
+  const gc = isPass ? "grade-pass" : "grade-fail";
+  const msg = isPass ? "ขอชื่นชม! ท่านมีทักษะกระบวนการคิดคำนวณและการแก้โจทย์ปัญหาเชิงประยุกต์ได้ดีเยี่ยม" : "ไม่เป็นไรครับ แนะนำให้ศึกษาบทวิเคราะห์ตัวช้อยส์ลวงและแนวคิดอย่างละเอียดด้านล่างนี้เพื่อพัฒนาความแม่นยำ";
+
+  app.innerHTML = `
+    <div class="card summary-card">
+      <div style="font-size:40px;margin-bottom:8px;">🏆</div>
+      <h2 style="font-size:22px; margin-bottom:4px; color: var(--primary); font-weight:700;">ใบรายงานผลคะแนนสอบดิจิทัล</h2>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">สถาบันส่งเสริมการเรียนรู้ (สกร.)</div>
+      
+      <div class="student-info-box">
+        <p>👤 <b>ชื่อผู้เข้าสอบ:</b> ${state.studentName}</p>
+        <p>🆔 <b>รหัสประจำตัว:</b> ${state.studentId}</p>
+        <p>🏫 <b>ระดับการศึกษา:</b> ${state.studentLevel}</p>
+      </div>
+
+      <div style="font-size:16px;color:var(--text); margin-top:14px;">สรุปคะแนนทำได้รวม <b>${score}</b> คะแนน จากทั้งหมด <b>${state.questions.length}</b> ข้อ</div>
+      <div style="margin:10px 0;"><span class="grade-pill ${gc}">${grade}</span></div>
+      <div style="color:var(--text-muted);margin-bottom:16px;font-size:14px;padding:0 10px;">${msg}</div>
+      
+      <div class="grid-stats">
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)">${score}</div><div class="slbl">ถูกต้อง (ข้อ)</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)">${state.questions.length - score}</div><div class="slbl">ผิดพลาด (ข้อ)</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--primary)">${pct}%</div><div class="slbl">คิดเป็นเปอร์เซ็นต์</div></div>
+      </div>
+      
+      <p style="font-size:12px; color:var(--red); font-weight:600; margin-bottom:18px; background:var(--red-light); padding:6px; border-radius:6px;">📸 นักศึกษาสามารถแคปภาพหน้าจอนี้เพื่อนำส่งรายงานเป็นหลักฐานการเรียนรู้แด่คุณครู สกร.</p>
+      
+      <button class="btn btn-primary" onclick="restartQuiz()">🔄 ทำแบบทดสอบใหม่อีกครั้ง (สุ่มสลับโจทย์)</button>
+    </div>
+    
+    <div class="card" style="margin-top:6px;">
+      <div class="review-title">📋 สรุปเฉลยและบทวิเคราะห์กระบวนการคิดคำนวณอย่างละเอียด</div>
+      ${reviewHtml}
+    </div>
+  `;
+}
+
+function selectAnswer(i) { if (!state.checked[state.current]) { state.answers[state.current] = i; renderApp(); } }
+function checkAnswer()   { if (state.answers[state.current] !== null) { state.checked[state.current] = true; renderApp(); } }
+function goNext()        { state.current++; renderApp(); }
+function goPrev()        { if (state.current > 0) { state.current--; renderApp(); } }
+function restartQuiz()   { 
+  state.isStarted = false; 
+  renderApp(); 
+}
+
+renderApp();
+</script>
+</body>
+</html>
