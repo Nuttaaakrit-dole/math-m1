@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบทดสอบ N-NET คณิตศาสตร์ ม.ต้น (ชุดที่ 5)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #0369a1; /* สีฟ้าครามเข้ม/น้ำเงินคณิตศาสตร์ ช่วยสร้างสมาธิและการคิดคำนวณ */
+    --primary-dark: #0c4a6e;
+    --primary-light: #f0f9ff;
+    --green: #166534; --green-light: #f0fdf4; --green-mid: #bbf7d0;
+    --red: #991b1b; --red-light: #fef2f2; --red-mid: #fecaca;
+    --amber-light: #fffbe6; --amber: #d97706;
+    --gray-bg: #f8fafc; --gray-card: #ffffff; --gray-border: #e2e8f0;
+    --text: #0f172a; --text-muted: #475569;
+  }
+  body { font-family: 'Sarabun', sans-serif; background: var(--gray-bg); color: var(--text); padding: 16px 8px; line-height: 1.6; }
+  .container { max-width: 650px; margin: 0 auto; padding-bottom: 60px; }
+  
+  .header-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 26px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
+  .header-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .header-card p { font-size: 14px; opacity: 0.9; }
+
+  .card { background: var(--gray-card); border: 1px solid var(--gray-border); border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01), 0 2px 4px -1px rgba(0,0,0,0.01); }
+  
+  .emoji-banner { font-size: 48px; text-align: center; margin-bottom: 16px; margin-top: 8px; animation: bounce 2s infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .form-group { margin-bottom: 16px; text-align: left; }
+  .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .form-control { width: 100%; padding: 12px 14px; border: 1px solid var(--gray-border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 15px; transition: all 0.2s; }
+  .form-control:focus { outline: none; border-color: var(--primary); background-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.15); }
+  
+  .progress-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 14px; color: var(--text-muted); font-weight: 500; }
+  .progress-bar-bg { background: #e2e8f0; height: 8px; border-radius: 4px; flex-grow: 1; margin: 0 12px; position: relative; overflow: hidden; }
+  .progress-bar-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s ease; }
+
+  .question-text { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--text); white-space: pre-line; background: #fdfdfd; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
+  .hint-box { background: var(--amber-light); border-left: 4px solid var(--amber); padding: 12px 16px; border-radius: 4px 8px 8px 4px; margin-bottom: 20px; font-size: 14px; color: var(--amber); }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .option-item { display: flex; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--gray-border); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; background: white; font-size: 15px; }
+  .option-item:hover { border-color: #94a3b8; background: #f8fafc; }
+  .option-item.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); font-weight: 500; }
+  
+  .option-item.correct-reveal { border-color: var(--green-mid); background: var(--green-light); color: var(--green); font-weight: 500; }
+  .option-item.wrong-reveal { border-color: var(--red-mid); background: var(--red-light); color: var(--red); }
+  .option-item.disabled { cursor: not-allowed; pointer-events: none; }
+
+  .radio-dot { height: 18px; min-width: 18px; border: 2px solid #cbd5e1; border-radius: 50%; margin-right: 12px; margin-top: 2px; position: relative; display: inline-block; }
+  .option-item.selected .radio-dot { border-color: var(--primary); }
+  .option-item.selected .radio-dot::after { content: ''; position: absolute; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; top: 2px; left: 2px; }
+  .option-item.correct-reveal .radio-dot { border-color: var(--green); }
+  .option-item.correct-reveal .radio-dot::after { content: '✓'; color: var(--green); font-size: 12px; font-weight: bold; position: absolute; top: -4px; left: 2px; }
+  .option-item.wrong-reveal .radio-dot { border-color: var(--red); }
+  .option-item.wrong-reveal .radio-dot::after { content: '✕'; color: var(--red); font-size: 12px; font-weight: bold; position: absolute; top: -4px; left: 2px; }
+
+  .rationale-box { padding: 14px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
+  .rationale-box.correct { background: var(--green-light); border: 1px dashed var(--green-mid); color: var(--green); }
+  .rationale-box.wrong { background: var(--red-light); border: 1px dashed var(--red-mid); color: var(--red); }
+
+  .nav-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
+  .btn { flex: 1; padding: 12px 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; text-decoration: none; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-primary:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .summary-card { text-align: center; padding: 32px 24px; border: 2px solid var(--primary) !important; }
+  .student-info-box { background: #f0f9ff; border: 1px dashed var(--primary); padding: 16px; border-radius: 12px; margin: 16px 0; text-align: left; }
+  .student-info-box p { font-size: 14px; margin-bottom: 4px; color: var(--text); }
+  .student-info-box p b { color: var(--primary); }
+  
+  .grade-pill { display: inline-block; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 16px; margin: 8px 0; }
+  .grade-pass { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .grade-fail { background: var(--red-light); color: var(--red); border: 1px solid var(--red-mid); }
+  
+  .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+  .stat-box { background: #f8fafc; border: 1px solid var(--gray-border); padding: 12px; border-radius: 10px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; }
+  .slbl { font-size: 12px; color: var(--text-muted); }
+
+  .review-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; text-align: left; border-bottom: 2px solid var(--primary); padding-bottom: 6px; color: var(--primary); }
+  .review-item { text-align: left; padding: 16px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+  .review-item:last-child { border-bottom: none; }
+  
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-card">
+    <h1>สกร.โนนสัง ระดับมัธยมศึกษาตอนต้น — แบบทดสอบ N-NET</h1>
+    <p>วิชาคณิตศาสตร์ (ชุดที่ 5: ระดับประยุกต์ใช้และความคิดรวบยอดขั้นสูง)</p>
+  </div>
+
+  <div id="quiz-app"></div>
+</div>
+
+<script>
+const quizData = {
+  "questions": [
+    {
+      "question": "ผลลัพธ์ของ (-12) × 15 + (-450) ÷ (-9) มีค่าตรงกับข้อใด?",
+      "answerOptions": [
+        { "text": "-130", "rationale": "ถูกต้อง! ขั้นตอนการคิด: (-12) × 15 = -180 และ (-450) ÷ (-9) = 50 จากนั้นนำผลลัพธ์มารวมกันจะได้ (-180) + 50 = -130", "isCorrect": true },
+        { "text": "-230", "rationale": "ตัวลวงเครื่องหมาย: เกิดจากคิดเครื่องหมายการหารผิดเป็นลบ ทำให้ได้ (-180) + (-50) = -230", "isCorrect": false },
+        { "text": "130", "rationale": "ตัวลวงสลับขั้ว: คำนวณขนาดตัวเลขถูก แต่ใส่เครื่องหมายสลับเป็นจำนวนบวก", "isCorrect": false },
+        { "text": "-70", "rationale": "ตัวลวงลำดับคิด: เกิดความผิดพลาดในกระบวนการตั้งคูณหรือหารตัวเลขพื้นฐาน", "isCorrect": false }
+      ],
+      "hint": "คำนวณวงเล็บคู่คูณและคู่หารแยกกันก่อน โดยคำนึงถึงกฎเครื่องหมาย ลบหารลบได้บวก และบวกคูณลบได้ลบ"
+    },
+    {
+      "question": "ร้านค้าแห่งหนึ่งติดป้ายราคาเสื้อตัวหนึ่งไว้ 800 บาท โดยในช่วงเทศกาลมีการลดราคาครั้งแรก 20% ต่อมาลดราคาเพิ่มให้อีก 10% จากราคาที่ลดแล้ว อยากทราบว่าผู้ซื้อต้องจ่ายเงินค่าเสื้อตัวนี้ในราคาเท่าใด?",
+      "answerOptions": [
+        { "text": "576 บาท", "rationale": "ถูกต้อง! ลดครั้งแรก 20% ของ 800 คิดเป็นเหลือราคา 640 บาท จากนั้นลดเพิ่มอีก 10% ของ 640 คิดเป็นลดไป 64 บาท ราคาขายสุทธิจึงเท่ากับ 640 - 64 = 576 บาท", "isCorrect": true },
+        { "text": "560 บาท", "rationale": "ตัวลวงบวกเปอร์เซ็นต์ตรงๆ: นำเปอร์เซ็นต์การลดมารวมกันดื้อๆ เป็นลด 30% ของ 800 ซึ่งผิดหลักความเป็นจริงของการลดราคาทับซ้อน", "isCorrect": false },
+        { "text": "640 บาท", "rationale": "ตัวลวงคิดขั้นเดียว: คิดเฉพาะราคาหลังจากการลดราคาครั้งแรก 20% แต่ลืมคิดการลดระลอกสองอีก 10%", "isCorrect": false },
+        { "text": "720 บาท", "rationale": "ตัวลวงคิดสลับส่วน: คิดเฉพาะส่วนลด 10% จากฐานราคาตั้งต้น 800 บาท", "isCorrect": false }
+      ],
+      "hint": "คำนวณหาราคาหลังลดรอบแรกก่อน จากนั้นใช้ราคานั้นเป็นฐานใหม่ในการคิดส่วนลดรอบที่สอง"
+    },
+    {
+      "question": "ถ้าอัตราส่วนของอายุของแดง ต่อ ดำ เป็น 3 : 4 และอายุของดำ ต่อ เขียว เป็น 6 : 5 ถ้าแดงมีอายุ 18 ปี อยากทราบว่าเขียวจะมีอายุเท่าใด?",
+      "answerOptions": [
+        { "text": "20 ปี", "rationale": "ถูกต้อง! หาอัตราส่วนร่วม แดง:ดำ:เขียว โดยทำส่วนของดำให้เท่ากัน ครน. ของ 4 และ 6 คือ 12 จะได้ แดง:ดำ = 9:12 และ ดำ:เขียว = 12:10 รวมเป็น 9:12:10 เมื่อแดงอายุ 18 ปี (9 × 2) ดังนั้นเขียวจะมีอายุ 10 × 2 = 20 ปี", "isCorrect": true },
+        { "text": "24 ปี", "rationale": "ตัวลวงอายุคนกลาง: นี่คืออายุของดำ ไม่ใช่อายุของเขียวตามที่โจทย์ถาม", "isCorrect": false },
+        { "text": "15 ปี", "rationale": "ตัวลวงอัตราส่วนดิบ: นำเอาสัดส่วนเลข 5 ของเขียวไปคำนวณโดยไม่มีการปรับฐานตัวเชื่อมให้เท่ากันก่อน", "isCorrect": false },
+        { "text": "22 ปี", "rationale": "ตัวลวงสุ่มตัวเลข: เป็นตัวเลือกที่ตั้งขึ้นมาหลอกเพื่อความใกล้เคียงเชิงสถิติ", "isCorrect": false }
+      ],
+      "hint": "สร้างอัตราส่วนต่อเนื่อง แดง : ดำ : เขียว โดยเชื่อมโยงสัดส่วนของ 'ดำ' ให้เป็นตัวเลขเดียวกันก่อน"
+    },
+    {
+      "question": "ที่ดินรูปสี่เหลี่ยมผืนผ้าแห่งหนึ่ง มีความยาวรอบรูป 60 เมตร ถ้าด้านยาว ยาวกว่าด้านกว้างอยู่ 6 เมตร ที่ดินผืนนี้มีพื้นที่ทั้งหมดกี่ตารางเมตร?",
+      "answerOptions": [
+        { "text": "216 ตารางเมตร", "rationale": "ถูกต้อง! สูตรความยาวรอบรูป 2(กว้าง + ยาว) = 60 จะได้ กว้าง + ยาว = 30 เมตร กำหนดกว้าง = x, ยาว = x + 6 แก้สมการได้ x + x + 6 = 30 -> 2x = 24 -> กว้าง = 12 เมตร และยาว = 18 เมตร พื้นที่ = 12 × 18 = 216 ตารางเมตร", "isCorrect": true },
+        { "text": "224 ตารางเมตร", "rationale": "ตัวลวงสุ่มสมการ: เกิดจากการสุ่มแยกขนาดความกว้างยาวผิดพลาด เช่น คิดว่าเป็น 14 กับ 16", "isCorrect": false },
+        { "text": "180 ตารางเมตร", "rationale": "ตัวลวงตรรกะกึ่งหนึ่ง: นำผลรวมกึ่งหนึ่ง (30) ไปคูณกับส่วนต่าง (6) โดยไม่ได้คำนวณหาความยาวด้านที่แท้จริง", "isCorrect": false },
+        { "text": "360 ตารางเมตร", "rationale": "ตัวลวงพื้นที่สี่เหลี่ยมจัตุรัส: คิดเลขฐานกว้างยาวจาก 60 ผิดเพี้ยนแบบไม่ได้ถอดความยาวรอบรูปออกเป็นด้านเดี่ยวก่อน", "isCorrect": false }
+      ],
+      "hint": "กึ่งหนึ่งของความยาวรอบรูปคือ กว้าง + ยาว = 30 เมตร และทราบว่าด้านยาวมากกว่ากว้างอยู่ 6 เมตร ลองหาตัวเลขสองจำนวนนี้ดู"
+    },
+    {
+      "question": "จงหาเซตคำตอบของอสมการเชิงเส้นตัวแปรเดียวต่อไปนี้:\n3(x - 2) ≤ 5x + 4",
+      "answerOptions": [
+        { "text": "x ≥ -5", "rationale": "ถูกต้อง! กระจายเข้าวงเล็บ: 3x - 6 ≤ 5x + 4 ย้ายข้างตัวแปร: -6 - 4 ≤ 5x - 3x จะได้ -10 ≤ 2x นำ 2 ไปหารทั้งสองข้างได้ -5 ≤ x หรือเขียนใหม่เป็น x ≥ -5", "isCorrect": true },
+        { "text": "x ≤ -5", "rationale": "ตัวลวงเครื่องหมายอสมการ: คำนวณตัวเลขได้ 5 ถูกต้องแต่หลงลืมสลับทิศทางเครื่องหมายอสมการในขั้นตอนสุดท้าย", "isCorrect": false },
+        { "text": "x ≥ -1", "rationale": "ตัวลวงการย้ายข้าง: ย้าย -6 ไปบวกฝั่งขวาผิดพลาดแทนที่จะนำ 4 มาลบฝั่งซ้าย", "isCorrect": false },
+        { "text": "x ≤ 5", "rationale": "ตัวลวงลบเครื่องหมาย: ลืมเครื่องหมายจำนวนติดลบ ทำให้ได้ค่าเป็นจำนวนบวกช้อยส์ลวง", "isCorrect": false }
+      ],
+      "hint": "กระจาย 3 เข้าไปในวงเล็บก่อน ย้ายข้างตัวแปร x ไปรวมกันฝั่งเดียวกัน และคำนวณหาค่าอย่างรอบคอบ"
+    },
+    {
+      "question": "ถังน้ำทรงกระบอกใบหนึ่งมีเส้นผ่านศูนย์กลางของฐานยาว 14 เซนติเมตร และมีความสูง 20 เซนติเมตร ถังใบนี้จะสามารถจุน้ำได้ปริมาตรสูงสุดกี่ลูกบาศก์เซนติเมตร? (กำหนดให้ π ≈ 22/7)",
+      "answerOptions": [
+        { "text": "3,080 ลูกบาศก์เซนติเมตร", "rationale": "ถูกต้อง! รัศมี (r) = 14 ÷ 2 = 7 ซม. สูตรปริมาตรทรงกระบอก V = πr²h จะได้ V = (22/7) × 7 × 7 × 20 = 22 × 7 × 20 = 3,080 ลูกบาศก์เซนติเมตร", "isCorrect": true },
+        { "text": "12,320 ลูกบาศก์เซนติเมตร", "rationale": "ตัวลวงลืมหารรัศมี: นำค่าเส้นผ่านศูนย์กลาง 14 ไปใช้แทนค่า r ในสูตรโดยตรง ทำให้ผลลัพธ์เกินจริงไป 4 เท่า", "isCorrect": false },
+        { "text": "440 ลูกบาศก์เซนติเมตร", "rationale": "ตัวลวงสูตรพื้นที่ผิวขอบ: ใช้สูตรความยาวเส้นรอบวงคูณความสูง (2πrh) แทนสูตรปริมาตร", "isCorrect": false },
+        { "text": "1,540 ลูกบาศก์เซนติเมตร", "rationale": "ตัวลวงลืมคูณสอง: คำนวณพื้นที่ฐานได้ถูกต้องแล้ว (154) แต่คูณความสูงผิดพลาดหรือลืมคูณองค์ประกอบร่วม", "isCorrect": false }
+      ],
+      "hint": "ระวัง! โจทย์ให้ 'เส้นผ่านศูนย์กลาง' ต้องเปลี่ยนเป็น 'รัศมี' โดยการหารสองก่อนนำเข้าสูตร V = πr²h"
+    },
+    {
+      "question": "ข้อมูลคะแนนสอบของนักศึกษา สกร. กลุ่มหนึ่งเป็นดังนี้: 12, 15, 15, 18, 20, 22, 25, 28, 30 ค่ามัธยฐาน (Median) ของข้อมูลชุดนี้ตรงกับข้อใด?",
+      "answerOptions": [
+        { "text": "20", "rationale": "ถูกต้อง! ข้อมูลเรียงลำดับจากน้อยไปหามากเรียบร้อยแล้ว มีจำนวนข้อมูลทั้งหมด 9 ตัว (จำนวนคี่) ตำแหน่งตรงกลางคือข้อมูลตัวที่ (9+1)/2 = ตัวที่ 5 ซึ่งก็คือเลข 20", "isCorrect": true },
+        { "text": "15", "rationale": "ตัวลวงฐานนิยม: 15 คือค่า 'ฐานนิยม' (Mode) เพราะมีความถี่ซ้ำกันมากที่สุด ไม่ใช่มัธยฐาน", "isCorrect": false },
+        { "text": "21.6", "rationale": "ตัวลวงค่าเฉลี่ยเลขคณิต: 21.6 คือค่าเฉลี่ยเลขคณิต (Mean) ที่เกิดจากผลรวมหารด้วย 9", "isCorrect": false },
+        { "text": "22", "rationale": "ตัวลวงนับสลับฝั่ง: เป็นค่าที่อยู่ถัดจากกึ่งกลาง เกิดจากการนับตำแหน่งผิดพลาด", "isCorrect": false }
+      ],
+      "hint": "มัธยฐานคือข้อมูลที่อยู่ตำแหน่ง 'ตรงกลาง' เมื่อจัดเรียงลำดับคะแนนจากน้อยไปมากแล้ว"
+    },
+    {
+      "question": "กล่องใบหนึ่งบรรจุลูกบอลสีแดง 4 ลูก สีขาว 3 ลูก และสีน้ำเงิน 5 ลูก สุ่มหยิบลูกบอลออกจากกล่องพร้อมกัน 1 ลูก ความน่าจะเป็นที่จะหยิบได้ลูกบอลที่ไม่ใช่สีขาวตรงกับข้อใด?",
+      "answerOptions": [
+        { "text": "3/4", "rationale": "ถูกต้อง! จำนวนลูกบอลทั้งหมด = 4 + 3 + 5 = 12 ลูก ลูกบอลที่ไม่ใช่สีขาว คือ สีแดงบวกสีน้ำเงิน = 4 + 5 = 9 ลูก ความน่าจะเป็น = 9/12 ตัดทอนเป็นเศษส่วนอย่างต่ำได้ 3/4", "isCorrect": true },
+        { "text": "1/4", "rationale": "ตัวลวงความน่าจะเป็นสีขาว: นี่คือความน่าจะเป็นที่จะได้ลูกบอล 'สีขาว' (3/12) ซึ่งขัดกับที่โจทย์ระบุว่า 'ไม่ใช่สีขาว'", "isCorrect": false },
+        { "text": "5/12", "rationale": "ตัวลวงสีน้ำเงินอย่างเดียว: คิดเฉพาะความน่าจะเป็นของลูกบอลสีน้ำเงินอย่างเดียว โดยละทิ้งกลุ่มบอลสีแดง", "isCorrect": false },
+        { "text": "2/3", "rationale": "ตัวลวงสัดส่วนสุ่ม: เป็นตัวเศษส่วนที่คำนวณจากฐานจำนวนบอลชนิดอื่นคลาดเคลื่อน", "isCorrect": false }
+      ],
+      "hint": "หาจำนวนเหตุการณ์ที่สนใจคือ บอลสีแดงรวมกับสีน้ำเงิน (ไม่ใช่สีขาว) แล้วหารด้วยจำนวนลูกบอลทั้งหมดในกล่อง"
+    },
+    {
+      "question": "บันไดยาว 10 เมตร พาดอยู่กับกำแพงตึกตั้งฉาก ปลายบนของบันไดอยู่สูงจากพื้นดิน 8 เมตร อยากทราบว่าโคนบันไดอยู่ห่างจากโคนกำแพงตึกกี่เมตร?",
+      "answerOptions": [
+        { "text": "6 เมตร", "rationale": "ถูกต้อง! ตามทฤษฎีบทพีทาโกรัส c² = a² + b² แทนค่าได้ 10² = 8² + b² -> 100 = 64 + b² -> b² = 36 ดังนั้นระยะทาง b = 6 เมตร (อัตราส่วนสามเหลี่ยมมุมฉากมาตรฐาน 6 : 8 : 10)", "isCorrect": true },
+        { "text": "4 เมตร", "rationale": "ตัวลวงลบตัวเลขตรงๆ: นำความยาวบันไดลบความสูงกำแพงตรงๆ (10 - 8 = 2 หรือ 4) ซึ่งไม่เป็นไปตามหลักเรขาคณิตมุมฉาก", "isCorrect": false },
+        { "text": "12 เมตร", "rationale": "ตัวลวงด้านตรงข้ามมุมฉากยาวที่สุด: ลืมไปว่าบันไดคือด้านตรงข้ามมุมฉากซึ่งต้องยาวที่สุด ด้านฐานจะยาวกว่าบันไดไม่ได้", "isCorrect": false },
+        { "text": "7 เมตร", "rationale": "ตัวลวงค่าประมาณ: เป็นตัวเลขสุ่มที่คิดจากการถอดสแควรูทผิดพจน์", "isCorrect": false }
+      ],
+      "hint": "ใช้สูตรทฤษฎีบทพีทาโกรัส โดยให้บันไดเป็นด้านตรงข้ามมุมฉาก (c = 10) และความสูงเป็นหนึ่งในด้านประกอบมุมฉาก"
+    },
+    {
+      "question": "คู่อันดับและกราฟข้อใดที่สมการเส้นตรง y = 2x - 3 ลากผ่านพิกัดพจน์ได้ถูกต้อง?",
+      "answerOptions": [
+        { "text": "(2, 1)", "rationale": "ถูกต้อง! ทดลองแทนค่า x = 2 ลงในสมการ จะได้ y = 2(2) - 3 = 4 - 3 = 1 ซึ่งได้ค่า y ตรงกับพิกัดในคู่อันดับพอดี", "isCorrect": true },
+        { "text": "(1, 2)", "rationale": "ตัวลวงพิกัดสลับ: แทนค่า x = 1 ได้ y = -1 ไม่ใช่ 2 ช้อยส์นี้หลอกเรื่องการสลับพิกัดหน้าหลังระหว่าง x กับ y", "isCorrect": false },
+        { "text": "(0, 3)", "rationale": "ตัวลวงเครื่องหมายติดลบ: แทนค่า x = 0 ต้องได้ y = -3 ไม่ใช่จำนวนบวก 3", "isCorrect": false },
+        { "text": "(3, 0)", "rationale": "ตัวลวงจุดตัดแกนผิดทิศ: แทนค่า x = 3 ได้ y = 2(3) - 3 = 3 ไม่ใช่ 0", "isCorrect": false }
+      ],
+      "hint": "นำค่าตัวเลขตัวหน้า (x) ในคู่อันดับไปแทนในสมการ แล้วดูว่าได้ผลลัพธ์เท่ากับตัวเลขตัวหลัง (y) หรือไม่"
+    },
+    {
+      "question": "ถ้านำจำนวนเต็มสองจำนวนมารวมกันจะได้ 45 และถ้าจำนวนหนึ่งมีค่าเป็นสองเท่าของอีกจำนวนหนึ่ง จงหาผลต่างของจำนวนสองจำนวนนั้น?",
+      "answerOptions": [
+        { "text": "15", "rationale": "ถูกต้อง! ให้จำนวนหนึ่งเป็น x อีกจำนวนเป็น 2x สมการคือ x + 2x = 45 -> 3x = 45 -> x = 15 อีกจำนวนจึงเป็น 30 โจทย์ถามผลต่างย่อยคู่นี้คือ 30 - 15 = 15", "isCorrect": true },
+        { "text": "30", "rationale": "ตัวลวงจำนวนค่ามาก: 30 คือค่าของจำนวนที่สองที่มีขนาดใหญ่กว่า แต่ไม่ใช่คำตอบของ 'ผลต่าง' ตามที่โจทย์ระบุ", "isCorrect": false },
+        { "text": "10", "rationale": "ตัวลวงสุ่มส่วนต่าง: คิดแยกสัดส่วนเลขกลมๆ โดยไม่ได้อิงระบบเงื่อนไขสมการสองเท่า", "isCorrect": false },
+        { "text": "25", "rationale": "ตัวลวงเลขคี่สัมพันธ์: เป็นตัวเลขสุ่มช้อยส์ลวงตาเพื่อดึงความสนใจ", "isCorrect": false }
+      ],
+      "hint": "หาเลขสองตัวที่ตัวหนึ่งเป็นสองเท่าของอีกตัวและบวกกันได้ 45 ซึ่งก็คือ 15 กับ 30 แล้วหาผลลัพธ์การลบกัน"
+    },
+    {
+      "question": "กระดาษรูปสามเหลี่ยมแผ่นหนึ่งมีพื้นที่ 84 ตารางเซนติเมตร ถ้ามีฐานยาว 14 เซนติเมตร กระดาษแผ่นนี้จะมีความสูงตรงกับข้อใด?",
+      "answerOptions": [
+        { "text": "12 เซนติเมตร", "rationale": "ถูกต้อง! จากสูตร พื้นที่สามเหลี่ยม = 1/2 × ฐาน × สูง แทนค่าได้ 84 = 1/2 × 14 × สูง -> 84 = 7 × สูง -> สูง = 84 ÷ 7 = 12 เซนติเมตร", "isCorrect": true },
+        { "text": "6 เซนติเมตร", "rationale": "ตัวลวงลืมคูณกลับเศษหนึ่งส่วนสอง: เกิดจากการย้ายข้างสูตรผิดพลาดโดยไม่ได้นำ 1/2 ไปคำนวณร่วมตามโครงสร้าง", "isCorrect": false },
+        { "text": "24 เซนติเมตร", "rationale": "ตัวลวงคูณพจน์ซ้ำสอง: ลืมส่วนประกอบของฐานเศษส่วนทำให้ค่าที่คำนวณได้ขยายขนาดใหญ่ขึ้นสองเท่า", "isCorrect": false },
+        { "text": "16 เซนติเมตร", "rationale": "ตัวลวงสุ่มตัวเลขกลม: ตั้งไว้เพื่อหลอกนักศึกษาที่คำนวณสูตรแม่สุคูณผิดพลาด", "isCorrect": false }
+      ],
+      "hint": "สูตรพื้นที่สามเหลี่ยมคือ 1/2 × ฐาน × สูง ย้ายข้างหาส่วนสูงโดยนำพื้นที่ไปคูณสองแล้วหารด้วยความยาวฐาน"
+    },
+    {
+      "question": "ข้อใดคือรูปสัญกรณ์วิทยาศาสตร์ที่ถูกต้องของจำนวน 0.0000456?",
+      "answerOptions": [
+        { "text": "4.56 × 10⁻⁵", "rationale": "ถูกต้อง! การทำสัญกรณ์วิทยาศาสตร์ต้องเขียนในรูป A × 10ⁿ โดยที่ 1 ≤ A < 10 เลื่อนจุดทศนิยมไปทางขวา 5 ตำแหน่งเพื่อให้ได้ 4.56 เลขชี้กำลังจึงเป็น -5", "isCorrect": true },
+        { "text": "45.6 × 10⁻⁶", "rationale": "ตัวลวงรูปไม่มาตรฐาน: แม้ค่าตัวเลขจะเท่ากัน แต่ตัวหน้า (45.6) มีค่ามากกว่า 10 ซึ่งผิดหลักเกณฑ์สัญกรณ์วิทยาศาสตร์", "isCorrect": false },
+        { "text": "4.56 × 10⁵", "rationale": "ตัวลวงเครื่องหมายกำลังบวก: ใช้เลขชี้กำลังเป็นบวก ซึ่งใช้สำหรับค่าจำนวนที่มากกว่าหนึ่ง ไม่ใช่ทศนิยมขนาดเล็กกว่า 1", "isCorrect": false },
+        { "text": "0.456 × 10⁻⁴", "rationale": "ตัวลวงรูปต่ำกว่าเกณฑ์: ตัวหน้า (0.456) มีค่าน้อยกว่า 1 ไม่ผ่านข้อกำหนดมาตรฐานสัญกรณ์", "isCorrect": false }
+      ],
+      "hint": "นับจำนวนตำแหน่งการเลื่อนจุดทศนิยมจากซ้ายไปขวาให้อยู่หลังเลขตัวแรกที่ไม่ใช่ศูนย์ (เลข 4) และจำไว้ว่าเลื่อนขวากำลังติดลบ"
+    },
+    {
+      "question": "สมปองกู้เงินจากสถาบันการเงินมา 20,000 บาท อัตราดอกเบี้ยคงที่ 6% ต่อปี เมื่อเวลาผ่านไป 3 ปี สมปองจะต้องจ่ายดอกเบี้ยรวมเป็นเงินเท่าใด?",
+      "answerOptions": [
+        { "text": "3,600 บาท", "rationale": "ถูกต้อง! สูตรดอกเบี้ยคงที่ = เงินต้น × อัตราดอกเบี้ย × ระยะเวลา = 20,000 × (6/100) × 3 = 1,200 × 3 = 3,600 บาท", "isCorrect": true },
+        { "text": "1,200 บาท", "rationale": "ตัวลวงคิดปีเดียว: คำนวณยอดดอกเบี้ยเฉพาะของปีแรกปีเดียว โดยไม่ได้คูณระยะเวลา 3 ปีตามเงื่อนไข", "isCorrect": false },
+        { "text": "23,600 บาท", "rationale": "ตัวลวงเงินยอดรวมสุทธิ: ยอดนี้คือเงินต้นรวมดอกเบี้ยทั้งหมด แต่โจทย์ถามเจาะจงเฉพาะ 'ดอกเบี้ยรวม' เท่านั้น", "isCorrect": false },
+        { "text": "4,800 บาท", "rationale": "ตัวลวงสุ่มอัตราดอกเบี้ย: คิดอัตราดอกเบี้ยผิดพลาดหรือใช้วิธีคำนวณผิดทิศทาง", "isCorrect": false }
+      ],
+      "hint": "คำนวณหาดอกเบี้ยของ 1 ปีก่อน (6% ของ 20,000) จากนั้นนำผลลัพธ์คูณกับจำนวนปีคือ 3 ปี"
+    },
+    {
+      "question": "รูปสามเหลี่ยมสองรูปจะมีความเท่ากันทุกประการแบบ \"มุม-ด้าน-มุม\" (ม.ด.ม.) เมื่อตรงตามเงื่อนไขในข้อใด?",
+      "answerOptions": [
+        { "text": "มีมุมที่มีขนาดเท่ากัน 2 คู่ และด้านที่เป็นแขนร่วมของมุมทั้งสองยาวเท่ากัน 1 คู่", "rationale": "ถูกต้อง! นิยามของ ม.ด.ม. คือมีมุมเท่ากันสองคู่และด้านที่อยู่ระหว่างมุมคู่นั้น (ด้านที่เป็นแขนร่วม) จะต้องยาวเท่ากันพอดี", "isCorrect": true },
+        { "text": "มีด้านยาวเท่ากัน 2 คู่ และมีมุมที่อยู่ระหว่างด้านคู่ที่ยาวเท่ากันมีขนาดเท่ากัน", "rationale": "ตัวลวงสลับเงื่อนไข: นี่คือนิยามความเท่ากันทุกประการแบบ 'ด้าน-มุม-ด้าน' (ด.ม.ด.) ไม่ใช่ ม.ด.ม.", "isCorrect": false },
+        { "text": "มีมุมเท่ากัน 3 คู่ โดยไม่มีข้อกำหนดเกี่ยวกับความยาวด้าน", "rationale": "ตัวลวงรูปคล้าย: เงื่อนไขมุมเท่ากันสามคู่พิสูจน์ได้เพียงว่าเป็น 'รูปสามเหลี่ยมที่คล้ายกัน' แต่ไม่สามารถบอกได้ว่าเท่ากันทุกประการ", "isCorrect": false },
+        { "text": "มีด้านยาวเท่ากันทุกคู่และมุมเท่ากันทุกคู่โดยไม่มีเงื่อนไขลำดับตำแหน่ง", "rationale": "ตัวลวงขยายภาพรวม: เป็นการระบุสมบัติปลายทางหลังพิสูจน์เสร็จสิ้นแล้ว ไม่ใช่เงื่อนไขตั้งต้นเพื่อการพิสูจน์", "isCorrect": false }
+      ],
+      "hint": "พิจารณาโครงสร้างความสัมพันธ์ตามชื่อ 'มุม-ด้าน-มุม' ด้านที่ยาวเท่ากันต้องอยู่ระหว่างมุมสองมุมที่เป็นฐานขนาบข้าง"
+    },
+    {
+      "question": "ถ้าพิจารณาแผนภาพต้น-ใบ ของคะแนนดิบกลุ่มหนึ่งดังนี้:\n1 | 2 5 5 8\n2 | 0 1 4 7 9\n3 | 3 5\nอยากทราบว่าฐานนิยม (Mode) ของข้อมูลชุดนี้มีค่าเท่ากับข้อใด?",
+      "answerOptions": [
+        { "text": "15", "rationale": "ถูกต้อง! แผนภาพต้นใบแถวแรก 1 | 2 5 5 8 หมายถึงข้อมูล 12, 15, 15, 18 ซึ่งพบว่าเลข 15 มีการปรากฏซ้ำมากที่สุด (2 ครั้ง) จึงเป็นค่าฐานนิยม", "isCorrect": true },
+        { "text": "5", "rationale": "ตัวลวงเอาเฉพาะใบ: มองเห็นเลข 5 ซ้ำกันแต่ลืมนำตัวเลขส่วนต้น (เลข 1) มารวมหลักสิบทำให้คำตอบผิด", "isCorrect": false },
+        { "text": "25", "rationale": "ตัวลวงดูผิดแถว: หลงไปดูแถวอื่นที่คิดว่ามีเลขความถี่สัมพันธ์กันแต่ไม่ใช่จุดที่ซ้ำหนาแน่นที่สุด", "isCorrect": false },
+        { "text": "12", "rationale": "ตัวลวงค่าต่ำสุด: นำข้อมูลตัวแรกสุดของชุดข้อมูลมาเป็นตัวเลือกหลอกพิจารณา", "isCorrect": false }
+      ],
+      "hint": "ฐานนิยมคือข้อมูลที่ซ้ำกันมากที่สุด สังเกตในฝั่ง 'ใบ' ว่ามีเลขใดในแถวเดียวกันที่เขียนซ้ำกันและนำมาต่อท้ายเลข 'ต้น' ในหลักสิบ"
+    },
+    {
+      "question": "ในการโยนเหรียญเที่ยงตรง 1 เหรียญ 3 ครั้ง จำนวนสมาชิกของเหตุการณ์ในปริภูมิตัวอย่าง (Sample Space) ทั้งหมดจะมีค่าเท่ากับข้อใด?",
+      "answerOptions": [
+        { "text": "8", "rationale": "ถูกต้อง! การโยนเหรียญแต่ละครั้งมีผลลัพธ์ได้ 2 หน้า (หัวหรือก้อย) โยน 3 ครั้งตามกฎการนับเบื้องต้น จะได้ผลลัพธ์ทั้งหมดเป็น 2 × 2 × 2 = 2³ = 8 วิธี", "isCorrect": true },
+        { "text": "6", "rationale": "ตัวลวงบวกเลขตรงๆ: เกิดจากนำหน้าเหรียญ (2) มาบวกกันสามครั้ง หรือคูณกับจำนวนครั้งตรงๆ (2 × 3 = 6) ซึ่งผิดกฎการทำงานต่อเนื่อง", "isCorrect": false },
+        { "text": "3", "rationale": "ตัวลวงจำนวนครั้ง: นำตัวเลขจำนวนครั้งที่โยนในโจทย์มาเป็นคำตอบโดยไม่ได้คิดความน่าจะเป็นของหน้าเหรียญ", "isCorrect": false },
+        { "text": "4", "rationale": "ตัวลวงจำนวนหน้าคู่อันดับ: คิดฐานความน่าจะเป็นของการโยนเหรียญเพียงแค่สองครั้งแรก", "isCorrect": false }
+      ],
+      "hint": "ใช้กฎการคูณในการหาจำนวนวิธีทั้งหมด โดยเหรียญมี 2 หน้า และโยนต่อเนื่องกันทั้งหมด 3 ครั้ง"
+    },
+    {
+      "question": "พื้นที่ผิวทั้งหมดของลูกบาศก์ที่มีความยาวด้านละ 5 เซนติเมตร มีค่ากี่ตารางเซนติเมตร?",
+      "answerOptions": [
+        { "text": "150 ตารางเซนติเมตร", "rationale": "ถูกต้อง! ลูกบาศก์มีทั้งหมด 6 หน้า แต่ละหน้าเป็นรูปสี่เหลี่ยมจัตุรัสมีพื้นที่ = ด้าน × ด้าน = 5 × 5 = 25 ตร.ซม. ดังนั้นพื้นที่ผิวทั้งหมด = 6 × 25 = 150 ตารางเซนติเมตร", "isCorrect": true },
+        { "text": "125 ตารางเซนติเมตร", "rationale": "ตัวลวงสูตรปริมาตร: 125 เกิดจากสูตรกว้าง × ยาว × สูง (5³) ซึ่งเป็นค่าของ 'ปริมาตร' ไม่ใช่พื้นที่ผิวตามที่โจทย์สั่ง", "isCorrect": false },
+        { "text": "100 ตารางเซนติเมตร", "rationale": "ตัวลวงคิดสี่หน้า: คำนวณพื้นที่ผิวข้างเพียงแค่ 4 ด้าน โดยลืมรวมพื้นที่ผิวฝาบนและฐานด้านล่าง", "isCorrect": false },
+        { "text": "30 ตารางเซนติเมตร", "rationale": "ตัวลวงความยาวสันรวม: นำความยาวด้านไปคูณกับจำนวนหน้าตรงๆ โดยไม่ได้คิดยกกำลังสองของพื้นที่", "isCorrect": false }
+      ],
+      "hint": "หาพื้นที่ของ 1 หน้าก่อน (5 × 5) แล้วคูณด้วยจำนวนหน้าทั้งหมดของกล่องสี่เหลี่ยมลูกบาศก์ซึ่งมีอยู่ 6 หน้า"
+    },
+    {
+      "question": "ถ้าสมการสองเส้นคือ 2x + y = 8 และ x - y = 1 จุดตัดของกราฟเส้นตรงทั้งสองนี้อยู่ในควอดรันต์ (Quadrant) ที่เท่าใด?",
+      "answerOptions": [
+        { "text": "ควอดรันต์ที่ 1", "rationale": "ถูกต้อง! แก้ระบบสมการโดยนำสมการมารวมกันจะได้ 3x = 9 -> x = 3 แทนค่าหาระบบได้ y = 2 พิกัดจุดตัดคือ (3, 2) ซึ่งมีค่าเป็นบวกทั้งคู่ (+, +) จึงอยู่ในควอดรันต์ที่ 1", "isCorrect": true },
+        { "text": "ควอดรันต์ที่ 2", "rationale": "ตัวลวงเครื่องหมาย: พิกัดในควอดรันต์ที่ 2 ต้องเป็น (-, +) ซึ่งไม่ตรงกับพิกัดจุดตัดจริงที่ได้", "isCorrect": false },
+        { "text": "ควอดรันต์ที่ 3", "rationale": "ตัวลวงเครื่องหมาย: พิกัดในควอดรันต์ที่ 3 ต้องเป็น (-, -) คือติดลบทั้งคู่", "isCorrect": false },
+        { "text": "ควอดรันต์ที่ 4", "rationale": "ตัวลวงเครื่องหมาย: พิกัดในควอดรันต์ที่ 4 ต้องเป็น (+, -) คือเอกซ์เป็นบวกเวย์เป็นลบ", "isCorrect": false }
+      ],
+      "hint": "แก้ระบบสมการเพื่อหาค่า x และ y ออกมา จากนั้นดูเครื่องหมายว่าเป็นบวกหรือลบเพื่อระบุตำแหน่งจตุภาคหรือควอดรันต์"
+    },
+    {
+      "question": "สูตรการหาผลรวมของมุมภายในของรูปเหลี่ยมใดๆ คือ 180 × (n - 2) อยากทราบว่ารูปแปดเหลี่ยมจะมีผลรวมของมุมภายในทั้งหมดกี่องศา?",
+      "answerOptions": [
+        { "text": "1,080 องศา", "rationale": "ถูกต้อง! รูปแปดเหลี่ยมมีจำนวนด้าน n = 8 แทนค่าในสูตรได้ 180 × (8 - 2) = 180 × 6 = 1,080 องศา", "isCorrect": true },
+        { "text": "1,440 องศา", "rationale": "ตัวลวงลืมลบสอง: นำ 8 ไปคูณ 180 โดยตรงโดยไม่ได้หักค่าลบ 2 ออกจากสูตรมาตรฐานก่อน", "isCorrect": false },
+        { "text": "900 องศา", "rationale": "ตัวลวงรูปเจ็ดเหลี่ยม: คำนวณแทนค่าผิดพลาดโดยใช้ค่า n = 7 (รูปเจ็ดเหลี่ยม) แทนรูปแปดเหลี่ยม", "isCorrect": false },
+        { "text": "1,260 องศา", "rationale": "ตัวลวงสุ่มตัวเลขมิติมุม: ตั้งตัวเลือกเพื่อให้มีความใกล้เคียงกับฐานตัวเลขหลักพันองศา", "isCorrect": false }
+      ],
+      "hint": "แทนค่า n ด้วยจำนวนเหลี่ยมของโจทย์ นั่นคือ n = 8 ลงในสูตร ลบเลขในวงเล็บก่อนแล้วค่อยนำไปคูณกับ 180"
+    }
+  ]
+};
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+let state = {
+  isStarted: false,
+  studentName: '',
+  studentId: '',
+  studentLevel: 'สกร. ระดับมัธยมศึกษาตอนต้น',
+  questions: [],
+  current: 0,
+  answers: [],
+  checked: []
+};
+
+function initQuiz() {
+  let shuffled = shuffleArray([...quizData.questions]);
+  shuffled = shuffled.map(q => {
+    let opts = shuffleArray([...q.answerOptions]);
+    return { ...q, answerOptions: opts };
+  });
+
+  state.questions = shuffled;
+  state.current = 0;
+  state.answers = new Array(shuffled.length).fill(null);
+  state.checked = new Array(shuffled.length).fill(false);
+}
+
+function startQuiz() {
+  const nameInput = document.getElementById('input-name').value.trim();
+  const idInput = document.getElementById('input-id').value.trim();
+  
+  if (!nameInput || !idInput) {
+    alert('⚠️ กรุณากรอกข้อมูลชื่อ-นามสกุล และรหัสนักศึกษาให้ครบถ้วนก่อนเริ่มทำข้อสอบครับ');
+    return;
+  }
+  
+  state.studentName = nameInput;
+  state.studentId = idInput;
+  state.isStarted = true;
+  
+  initQuiz();
+  renderApp();
+}
+
+function renderApp() {
+  const app = document.getElementById('quiz-app');
+  
+  if (!state.isStarted) {
+    app.innerHTML = `
+      <div class="card" style="animation: fadeIn 0.4s ease; text-align: center;">
+        <div class="emoji-banner">📐 📐 📊 🧮</div>
+        <h2 style="font-size: 18px; margin-bottom: 18px; color: var(--primary); font-weight: 700;">ระบบลงทะเบียนเข้าทดสอบออนไลน์</h2>
+        
+        <div class="form-group">
+          <label for="input-name">ชื่อ - นามสกุล *</label>
+          <input type="text" id="input-name" class="form-control" placeholder="ระบุชื่อและนามสกุลของคุณ" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="input-id">รหัสนักศึกษา สกร. *</label>
+          <input type="text" id="input-id" class="form-control" placeholder="ระบุรหัสประจำตัวผู้เรียน" required>
+        </div>
+        
+        <div class="form-group">
+          <label>ระดับชั้น/หลักสูตร</label>
+          <input type="text" class="form-control" value="${state.studentLevel}" disabled style="background-color: #f1f5f9; font-weight: 600; color: var(--primary-dark)">
+        </div>
+        
+        <button class="btn btn-primary" onclick="startQuiz()" style="width: 100%; margin-top: 12px; font-size: 16px;">✏️ เริ่มทำข้อสอบชุดที่ 5</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (state.current >= state.questions.length) {
+    renderSummary(app);
+    return;
+  }
+
+  const q = state.questions[state.current];
+  const pct = Math.round((state.current / state.questions.length) * 100);
+  const selectedIdx = state.answers[state.current];
+  const isChecked = state.checked[state.current];
+
+  let hintHtml = q.hint ? `<div class="hint-box">💡 <b>แนวคิดช่วยคิดคำนวณ:</b> ${q.hint}</div>` : '';
+  
+  let optionsHtml = q.answerOptions.map((opt, idx) => {
+    let cls = 'option-item';
+    if (selectedIdx === idx) cls += ' selected';
+    if (isChecked) {
+      cls += ' disabled';
+      if (opt.isCorrect) cls += ' correct-reveal';
+      else if (selectedIdx === idx) cls += ' wrong-reveal';
+    }
+    return `
+      <div class="${cls}" onclick="selectAnswer(${idx})">
+        <span class="radio-dot"></span>
+        <div style="flex-grow:1;">${opt.text}</div>
+      </div>
+    `;
+  }).join('');
+
+  let feedbackHtml = '';
+  if (isChecked && selectedIdx !== null) {
+    const isCorrect = q.answerOptions[selectedIdx].isCorrect;
+    const rationale = q.answerOptions[selectedIdx].rationale;
+    feedbackHtml = `
+      <div class="rationale-box ${isCorrect ? 'correct' : 'wrong'}">
+        <b>${isCorrect ? '✨ Excellent! คำนวณถูกต้อง' : '❌ จุดที่คิดคำนวณผิดพลาด'}</b> — ${rationale}
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="progress-container">
+        <span><b>ข้อที่ ${state.current + 1}</b> จาก ${state.questions.length}</span>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        <span>${pct}% เสร็จสิ้น</span>
+      </div>
+      
+      <div class="question-text">${q.question}</div>
+      ${hintHtml}
+      <div class="options-list">${optionsHtml}</div>
+      ${feedbackHtml}
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" onclick="goPrev()" ${state.current === 0 ? 'disabled' : ''}>⬅️ ข้อก่อนหน้า</button>
+        ${!isChecked ? 
+          `<button class="btn btn-primary" onclick="checkAnswer()" ${selectedIdx === null ? 'disabled' : ''}>✔️ ส่งตรวจคำตอบ</button>` :
+          `<button class="btn btn-primary" onclick="goNext()">${state.current === state.questions.length - 1 ? '🏁 ประมวลผลลัพธ์คะแนน' : 'ข้อถัดไป ➡️'}</button>`
+        }
+      </div>
+    </div>
+  `;
+}
+
+function renderSummary(app) {
+  let score = 0;
+  let reviewHtml = '';
+
+  state.questions.forEach((q, i) => {
+    const userAnsIdx = state.answers[i];
+    const isCorrect = userAnsIdx !== null && q.answerOptions[userAnsIdx].isCorrect;
+    if (isCorrect) score++;
+
+    let correctOpt = q.answerOptions.find(o => o.isCorrect);
+    let userOpt = userAnsIdx !== null ? q.answerOptions[userAnsIdx] : null;
+
+    reviewHtml += `
+      <div class="review-item">
+        <div style="font-weight:600;margin-bottom:6px;color:var(--text)">ข้อ ${i+1}: ${q.question}</div>
+        <div style="color:${isCorrect ? 'var(--green)' : 'var(--red)'}; font-weight:600; font-size:14px;">
+          ${isCorrect ? '🔹 ผลการตอบ: ถูกต้อง (Correct)' : `🔸 ผลการตอบ: ผิด (คำตอบของคุณ: ${userOpt ? userOpt.text : 'ไม่เลือกคำตอบ'})`}
+        </div>
+        <div style="color:var(--text-muted);font-size:13px;margin-top:4px;background:#f8fafc;padding:8px;border-radius:6px;">
+          <b>💡 บทวิเคราะห์ทางตรรกศาสตร์และสูตรคำนวณ:</b> ${correctOpt ? correctOpt.rationale : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  const pct = Math.round((score / state.questions.length) * 100);
+  const isPass = pct >= 60;
+  const grade = isPass ? "ผ่านเกณฑ์การประเมินทักษะคณิตศาสตร์ระดับดีเยี่ยม 🎓" : "ต้องพัฒนาและฝึกฝนสูตรคำนวณเพิ่มเติม 📘";
+  const gc = isPass ? "grade-pass" : "grade-fail";
+  const msg = isPass ? "ขอชื่นชม! ท่านมีความสามารถในกระบวนการคิดวิเคราะห์เชิงตัวเลข โครงสร้างสมการ และเรขาคณิตขั้นสูงระดับ ม.ต้น ได้อย่างยอดเยี่ยม" : "ไม่เป็นไรครับ คณิตศาสตร์เน้นการฝึกฝน แนะนำให้ศึกษาบทวิเคราะห์เฉลยวิธีคิดด้านล่างเพื่อเรียนรู้เทคนิคแก้โจทย์ในอนาคตครับ";
+
+  app.innerHTML = `
+    <div class="card summary-card">
+      <div style="font-size:40px;margin-bottom:8px;">🏆</div>
+      <h2 style="font-size:22px; margin-bottom:4px; color: var(--primary); font-weight:700;">ใบรายงานผลคะแนนสอบดิจิทัล</h2>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">สถาบันส่งเสริมการเรียนรู้ (สกร.)</div>
+      
+      <div class="student-info-box">
+        <p>👤 <b>ชื่อผู้เข้าสอบ:</b> ${state.studentName}</p>
+        <p>🆔 <b>รหัสประจำตัว:</b> ${state.studentId}</p>
+        <p>🏫 <b>ระดับการศึกษา:</b> ${state.studentLevel}</p>
+      </div>
+
+      <div style="font-size:16px;color:var(--text); margin-top:14px;">สรุปคะแนนทำได้รวม <b>${score}</b> คะแนน จากทั้งหมด <b>${state.questions.length}</b> ข้อ</div>
+      <div style="margin:10px 0;"><span class="grade-pill ${gc}">${grade}</span></div>
+      <div style="color:var(--text-muted);margin-bottom:16px;font-size:14px;padding:0 10px;">${msg}</div>
+      
+      <div class="grid-stats">
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)">${score}</div><div class="slbl">ถูกต้อง (ข้อ)</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)">${state.questions.length - score}</div><div class="slbl">ผิดพลาด (ข้อ)</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--primary)">${pct}%</div><div class="slbl">คิดเป็นเปอร์เซ็นต์</div></div>
+      </div>
+      
+      <p style="font-size:12px; color:var(--red); font-weight:600; margin-bottom:18px; background:var(--red-light); padding:6px; border-radius:6px;">📸 นักศึกษาสามารถแคปภาพหน้าจอนี้เพื่อนำส่งรายงานเป็นหลักฐานการเรียนรู้แด่คุณครู สกร.</p>
+      
+      <button class="btn btn-primary" onclick="restartQuiz()">🔄 ทำแบบทดสอบใหม่อีกครั้ง (สุ่มสลับโจทย์ใหม่ทั้งหมด)</button>
+    </div>
+    
+    <div class="card" style="margin-top:6px;">
+      <div class="review-title">📋 สรุปเฉลยและวิธีคิดเชิงวิเคราะห์คณิตศาสตร์อย่างละเอียดรายข้อ</div>
+      ${reviewHtml}
+    </div>
+  `;
+}
+
+function selectAnswer(i) { if (!state.checked[state.current]) { state.answers[state.current] = i; renderApp(); } }
+function checkAnswer()   { if (state.answers[state.current] !== null) { state.checked[state.current] = true; renderApp(); } }
+function goNext()        { state.current++; renderApp(); }
+function goPrev()        { if (state.current > 0) { state.current--; renderApp(); } }
+function restartQuiz()   { 
+  state.isStarted = false; 
+  renderApp(); 
+}
+
+renderApp();
+</script>
+</body>
+</html>
